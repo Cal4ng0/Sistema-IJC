@@ -1,0 +1,3035 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head> 
+<link rel="stylesheet" href="styles.css">
+<meta charset="UTF-8">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+
+:root {
+  /* Paleta principal */
+  --brand:        #1847c2;
+  --brand-2:      #2358d9;
+  --brand-3:      #3a6ef5;
+  --brand-l:      #e4ecff;
+  --brand-d:      #0f35a0;
+  --brand-glow:   rgba(24, 71, 194, 0.12);
+
+  /* Superfícies */
+  --bg:           #f0f3f9;
+  --surface:      #ffffff;
+  --surface-2:    #f7f9fc;
+  --surface-3:    #edf1f8;
+  --glass:        rgba(255, 255, 255, 0.85);
+
+  /* Bordas */
+  --border:       #dde3ef;
+  --border-2:     #e8ecf5;
+  --border-focus: #c7d7f8;
+
+  /* Texto */
+  --text-1:   #0d1526;
+  --text-2:   #374461;
+  --text-3:   #7385a8;
+  --text-4:   #a8b5cc;
+  --text-inv: #ffffff;
+
+  /* Status semânticos */
+  --green:    #059669;
+  --green-2:  #12c58a;
+  --green-l:  #e0f5ed;
+  --green-d:  #047857;
+  --amber:    #d97706;
+  --amber-l:  #fef3e2;
+  --amber-d:  #b45309;
+  --red:      #dc2626;
+  --red-l:    #fee2e2;
+  --red-d:    #b91c1c;
+  --cyan:     #0891b2;
+  --cyan-l:   #ecfeff;
+  --indigo:   #5b50e8;
+  --indigo-l: #eeeeff;
+  --violet:   #7c3aed;
+  --violet-l: #f3f0ff;
+  --slate:    #64748b;
+
+  /* Etapas */
+  --desm-c:   #64748b; --desm-l: #f1f5f9;
+  --etiq-c:   #d97706; --etiq-l: #fef3e2;
+  --dig-c:    #1847c2; --dig-l:  #e4ecff;
+  --cla-c:    #059669; --cla-l:  #e0f5ed;
+
+  /* Raios */
+  --r-xs:  4px;
+  --r-sm:  7px;
+  --r:     10px;
+  --r-lg:  16px;
+  --r-xl:  22px;
+
+  /* Sombras */
+  --sh-xs: 0 1px 2px rgba(13, 21, 38, .04), 0 1px 4px rgba(13, 21, 38, .03);
+  --sh-sm: 0 2px 8px rgba(13, 21, 38, .06), 0 1px 3px rgba(13, 21, 38, .04);
+  --sh-md: 0 4px 20px rgba(13, 21, 38, .08), 0 2px 8px rgba(13, 21, 38, .04);
+  --sh-lg: 0 8px 36px rgba(13, 21, 38, .10), 0 3px 12px rgba(13, 21, 38, .05);
+  --sh-xl: 0 16px 56px rgba(13, 21, 38, .13), 0 6px 18px rgba(13, 21, 38, .06);
+
+  /* Tipografia */
+  --font:      'Plus Jakarta Sans', system-ui, sans-serif;
+  --mono:      'JetBrains Mono', 'DM Mono', monospace;
+  --font-sans: 'DM Sans', sans-serif;
+
+  /* Transições */
+  --t:     all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  --t-fast: all 0.12s ease;
+
+  /* Dimensões */
+  --sidebar-w: 320px;
+  --topbar-h:  60px;
+  --nav-h:     46px;
+}
+
+/* ----------------------------------------------------------------
+   2. RESET & BASE
+   ---------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 14px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-1);
+  font-size: 13.5px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Layout raiz para a Central Operacional */
+body.layout-central {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Layout raiz para o Dashboard */
+body.layout-dashboard {
+  display: block;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+/* ----------------------------------------------------------------
+   3. SCROLLBAR CUSTOMIZADA
+   ---------------------------------------------------------------- */
+::-webkit-scrollbar          { width: 6px; height: 6px; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-4); }
+
+/* ----------------------------------------------------------------
+   4. LOADER GLOBAL
+   ---------------------------------------------------------------- */
+#loader,
+#global-loader {
+  position: fixed;
+  inset: 0;
+  background: rgba(240, 243, 249, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  transition: opacity 0.4s ease;
+}
+
+#loader:not(.active),
+#global-loader.hide {
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+
+#loader.active { display: flex; }
+
+.loader-ring {
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--border);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: ijc-spin 0.75s linear infinite;
+}
+
+.loader-text,
+.loader-txt {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+@keyframes ijc-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ----------------------------------------------------------------
+   5. TOAST / NOTIFICAÇÕES
+   ---------------------------------------------------------------- */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: none;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 18px;
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-inv);
+  box-shadow: var(--sh-xl);
+  z-index: 10000;
+  animation: ijc-toast-in 0.22s ease;
+  max-width: 380px;
+}
+
+#toast.vis    { display: flex; }
+#toast.success { background: #065f46; }
+#toast.error   { background: var(--red-d); }
+#toast.info    { background: var(--brand-d); }
+
+@keyframes ijc-toast-in {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ----------------------------------------------------------------
+   6. MODAIS
+   ---------------------------------------------------------------- */
+.modal-overlay,
+#modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 21, 38, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 5000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  animation: ijc-fade-in 0.2s ease;
+}
+
+.modal-overlay.open,
+#modal-overlay.active { display: flex; }
+
+@keyframes ijc-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-xl);
+  padding: 32px;
+  width: 480px;
+  max-width: 95vw;
+  animation: ijc-slide-up 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes ijc-slide-up {
+  from { transform: scale(0.92) translateY(12px); opacity: 0; }
+  to   { transform: scale(1)    translateY(0);    opacity: 1; }
+}
+
+.modal-icon-wrap {
+  width: 52px;
+  height: 52px;
+  background: var(--brand-l);
+  border-radius: var(--r-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 18px;
+}
+
+.modal-hd,
+.modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin-bottom: 16px;
+  letter-spacing: -0.3px;
+}
+
+.modal-hd i { font-size: 14px; }
+
+.modal-body {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+.modal-body strong { color: var(--text-1); font-weight: 600; }
+
+.modal-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-3);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 13.5px;
+  color: var(--text-1);
+  outline: none;
+  transition: var(--t);
+  background: var(--surface-2);
+}
+
+.modal-input:focus {
+  border-color: var(--brand);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px var(--brand-glow);
+}
+
+.modal-list {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--brand);
+  max-height: 160px;
+  overflow-y: auto;
+  margin: 14px 0 22px;
+  line-height: 1.8;
+}
+
+.modal-confirm-msg {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+
+.modal-confirm-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--red);
+  background: var(--red-l);
+  border-radius: var(--r-sm);
+  padding: 8px 14px;
+  margin: 12px 0;
+  display: inline-block;
+}
+
+.modal-btns,
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  justify-content: flex-end;
+}
+
+/* ----------------------------------------------------------------
+   7. TOPBAR (Dashboard)
+   ---------------------------------------------------------------- */
+.topbar {
+  height: var(--topbar-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 0 var(--border), var(--sh-xs);
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(140deg, var(--brand-3), var(--brand-d));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(24, 71, 194, 0.35);
+  flex-shrink: 0;
+}
+
+.brand-mark i { color: var(--text-inv); font-size: 15px; }
+
+.brand-text-wrap .brand-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-1);
+  letter-spacing: -0.3px;
+  line-height: 1.1;
+}
+
+.brand-text-wrap .brand-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+  letter-spacing: 0.1px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ----------------------------------------------------------------
+   8. BADGE LIVE
+   ---------------------------------------------------------------- */
+.badge-live {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: var(--green-l);
+  border: 1px solid #6ee7b7;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--green-d);
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green-2);
+  animation: ijc-pulse 2s infinite;
+}
+
+@keyframes ijc-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ----------------------------------------------------------------
+   9. CONTROLES DA TOPBAR
+   ---------------------------------------------------------------- */
+.ctrl-capsule {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.ctrl-capsule i { font-size: 12px; color: var(--text-3); }
+
+.ctrl-capsule select {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+.btn-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: var(--t);
+}
+
+.btn-top:hover {
+  background: var(--brand);
+  color: var(--text-inv);
+  border-color: var(--brand);
+}
+
+/* ----------------------------------------------------------------
+   10. NAV RAIL (Dashboard tabs)
+   ---------------------------------------------------------------- */
+.nav-rail {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  gap: 2px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 16px;
+  height: var(--nav-h);
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: var(--t);
+}
+
+.nav-btn i { font-size: 12px; }
+.nav-btn:hover:not(.active) { color: var(--text-2); }
+.nav-btn.active { color: var(--brand); border-bottom-color: var(--brand); }
+
+/* ----------------------------------------------------------------
+   11. PANELS / PAINÉIS
+   ---------------------------------------------------------------- */
+.panel          { display: none; }
+.panel.active   { display: block; }
+
+.container {
+  padding: 24px 28px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* ----------------------------------------------------------------
+   12. KPI GRID (Dashboard)
+   ---------------------------------------------------------------- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px 22px;
+  box-shadow: var(--sh-sm);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kpi:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+
+.kpi-accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+
+.kpi-lbl {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-3);
+  margin-bottom: 10px;
+}
+
+.kpi-val {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--text-1);
+  line-height: 1;
+  letter-spacing: -0.6px;
+}
+
+.kpi-sub {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 5px;
+}
+
+.kpi-icon-bg {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 26px;
+  opacity: 0.06;
+}
+
+/* ----------------------------------------------------------------
+   13. STAGE STRIP (chips de resumo)
+   ---------------------------------------------------------------- */
+.stage-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.stage-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-2);
+  box-shadow: var(--sh-xs);
+}
+
+.stage-chip .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stage-chip b { font-weight: 800; color: var(--text-1); }
+.stage-chip .sep { color: var(--text-4); }
+
+/* ----------------------------------------------------------------
+   14. DASHBOARD GRID (2 colunas)
+   ---------------------------------------------------------------- */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 18px;
+}
+
+/* ----------------------------------------------------------------
+   15. SIDEBAR DE VOLUNTÁRIOS (Dashboard)
+   ---------------------------------------------------------------- */
+.vol-sidebar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-sm);
+  display: flex;
+  flex-direction: column;
+  height: 780px;
+  overflow: hidden;
+}
+
+.vs-head {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.vs-head h4 {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--text-1);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.vs-head h4 i { color: var(--brand); }
+
+.vs-search {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 12.5px;
+  outline: none;
+  background: var(--surface-2);
+  color: var(--text-1);
+  transition: var(--t);
+}
+
+.vs-search:focus { border-color: var(--brand); }
+.vs-list { overflow-y: auto; flex: 1; }
+
+.vs-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: var(--t);
+}
+
+.vs-item:hover {
+  background: var(--surface-2);
+  border-left-color: var(--brand);
+}
+
+.vs-item-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green-2);
+  flex-shrink: 0;
+}
+
+.status-dot.off { background: var(--text-4); }
+
+.vs-badge {
+  font-size: 11px;
+  font-weight: 800;
+  background: var(--brand-l);
+  color: var(--brand);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* ----------------------------------------------------------------
+   16. CARDS GERAIS
+   ---------------------------------------------------------------- */
+.charts-stack { display: flex; flex-direction: column; gap: 16px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  box-shadow: var(--sh-sm);
+}
+
+.card-hd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-2);
+}
+
+.card-hd i { color: var(--brand); font-size: 12px; }
+
+/* Card para Central Operacional */
+.content-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: var(--sh-sm);
+  transition: var(--t);
+}
+
+.content-card:hover { box-shadow: var(--sh-md); }
+
+.card-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+}
+
+.card-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.icon-blue   { background: var(--brand-l); }
+.icon-green  { background: var(--green-l); }
+.icon-red    { background: var(--red-l); }
+.icon-amber  { background: var(--amber-l); }
+
+.card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.2px;
+}
+
+.card-subtitle {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-left: auto;
+  font-weight: 400;
+}
+
+.card-body { padding: 24px; }
+
+/* ----------------------------------------------------------------
+   17. CHARTS
+   ---------------------------------------------------------------- */
+.chart-box          { position: relative; height: 300px; }
+.chart-box.md       { height: 260px; }
+.donut-box          { height: 300px; display: flex; justify-content: center; }
+.donut-box canvas   { max-width: 430px; }
+
+/* ----------------------------------------------------------------
+   18. FILTER ROW (Dashboard)
+   ---------------------------------------------------------------- */
+.filter-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  box-shadow: var(--sh-xs);
+}
+
+.fr-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-3);
+}
+
+/* ----------------------------------------------------------------
+   19. TOGGLE SWITCH
+   ---------------------------------------------------------------- */
+.toggle-wrap { display: flex; align-items: center; gap: 8px; }
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.toggle input { opacity: 0; width: 0; height: 0; }
+
+.t-track {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 22px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.t-thumb {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: var(--text-inv);
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle input:checked ~ .t-track { background: var(--brand); }
+.toggle input:checked ~ .t-thumb { transform: translateX(18px); }
+
+.toggle-lbl {
+  font-size: 12.5px;
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------------------
+   20. DETAILS PANEL (Voluntário)
+   ---------------------------------------------------------------- */
+.details-panel {
+  display: none;
+  background: var(--text-1);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  position: relative;
+  animation: ijc-fade-up 0.22s ease;
+}
+
+@keyframes ijc-fade-up {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dp-title {
+  color: #7dd3fc;
+  font-size: 13.5px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-right: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-dp-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: var(--t);
+}
+
+.btn-dp-close:hover { background: var(--red); color: var(--text-inv); }
+
+.dp-row {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--r-sm);
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  font-size: 11.5px;
+}
+
+.dp-row span {
+  color: var(--text-3);
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.dp-row b {
+  color: var(--text-inv);
+  display: block;
+  font-size: 12.5px;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------------------
+   21. INFO BAR
+   ---------------------------------------------------------------- */
+.info-bar {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: var(--brand-l);
+  border: 1px solid #c5d8fd;
+  border-radius: var(--r-sm);
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+.info-bar.vis { display: flex; }
+
+/* ----------------------------------------------------------------
+   22. PERFORMANCE — STAGE NAV
+   ---------------------------------------------------------------- */
+.stage-nav {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: var(--sh-sm);
+}
+
+.stage-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 14px 12px;
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-3);
+  cursor: pointer;
+  border-right: 1px solid var(--border);
+  transition: var(--t);
+}
+
+.stage-tab:last-child  { border-right: none; }
+.stage-tab:hover:not(.active) { background: var(--surface-2); color: var(--text-2); }
+.stage-tab.active      { background: var(--text-1); color: var(--text-inv); }
+
+.stage-tab .s-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stage-tab .s-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 700;
+}
+
+.stage-tab:not(.active) .s-badge {
+  background: var(--surface-3);
+  color: var(--text-3);
+}
+
+/* ----------------------------------------------------------------
+   23. PERFORMANCE OVERVIEW (painel escuro)
+   ---------------------------------------------------------------- */
+.perf-overview {
+  background: linear-gradient(135deg, #0d1526 0%, #1a2d58 100%);
+  border-radius: var(--r-lg);
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: 200px 1fr 1fr 1fr;
+  gap: 20px;
+  align-items: center;
+  box-shadow: var(--sh-lg);
+}
+
+.po-score { text-align: center; border-right: 1px solid rgba(255,255,255,.1); padding-right: 20px; }
+
+.po-score-val {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, #60a5fa, #34d399);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -2px;
+}
+
+.po-score-lbl {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,.5);
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.po-class { font-size: 13px; font-weight: 800; color: var(--text-inv); margin-top: 4px; }
+
+.po-item                { display: flex; flex-direction: column; gap: 4px; }
+.po-item-lbl            { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255,255,255,.4); }
+.po-item-val            { font-size: 18px; font-weight: 800; color: var(--text-inv); }
+.po-item-sub            { font-size: 11px; color: rgba(255,255,255,.5); }
+
+.po-gargalo {
+  background: rgba(220,38,38,.15);
+  border: 1px solid rgba(220,38,38,.3);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+}
+
+.po-melhor {
+  background: rgba(5,150,105,.15);
+  border: 1px solid rgba(5,150,105,.3);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+}
+
+/* ----------------------------------------------------------------
+   24. PERFORMANCE — KPI GRID
+   ---------------------------------------------------------------- */
+.perf-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.pkpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  box-shadow: var(--sh-xs);
+  border-top: 3px solid var(--brand);
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.pkpi:hover { transform: translateY(-1px); box-shadow: var(--sh-sm); }
+.pkpi.g { border-top-color: var(--green); }
+.pkpi.a { border-top-color: var(--amber); }
+.pkpi.r { border-top-color: var(--red); }
+.pkpi.i { border-top-color: var(--indigo); }
+.pkpi.c { border-top-color: var(--cyan); }
+.pkpi.v { border-top-color: var(--violet); }
+
+.pk-lbl {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-3);
+  margin-bottom: 6px;
+}
+
+.pk-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-1);
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+}
+
+.pk-sub { font-size: 10.5px; color: var(--text-3); margin-top: 4px; }
+
+/* ----------------------------------------------------------------
+   25. PERFORMANCE — CHARTS GRID
+   ---------------------------------------------------------------- */
+.perf-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.pcard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  box-shadow: var(--sh-sm);
+}
+
+.pcard.full { grid-column: 1 / -1; }
+
+.pcard-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-2);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.pcard-title i { font-size: 11px; }
+
+.pc-wrap        { position: relative; height: 240px; }
+.pc-wrap.tall   { height: 280px; }
+.pc-wrap.xtall  { height: 300px; }
+
+/* ----------------------------------------------------------------
+   26. PERFORMANCE — FILTROS
+   ---------------------------------------------------------------- */
+.perf-filters {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 20px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  box-shadow: var(--sh-xs);
+}
+
+.pf-grp           { display: flex; flex-direction: column; gap: 4px; }
+.pf-grp label     { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-3); }
+
+.pf-sel,
+.pf-inp {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 12.5px;
+  outline: none;
+  color: var(--text-1);
+  background: var(--surface-2);
+  transition: var(--t);
+  min-width: 150px;
+}
+
+.pf-sel:focus,
+.pf-inp:focus { border-color: var(--brand); }
+.pf-inp       { min-width: 180px; }
+
+/* ----------------------------------------------------------------
+   27. BOTÕES DE AÇÃO (performance)
+   ---------------------------------------------------------------- */
+.pfbtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid;
+  transition: var(--t);
+  align-self: flex-end;
+}
+
+.pfbtn-primary { background: var(--brand); color: var(--text-inv); border-color: var(--brand); }
+.pfbtn-primary:hover { background: var(--brand-d); }
+.pfbtn-ghost { background: var(--surface); color: var(--text-2); border-color: var(--border); }
+.pfbtn-ghost:hover { background: var(--surface-2); color: var(--brand); border-color: var(--brand); }
+
+/* ----------------------------------------------------------------
+   28. LIMIARES (chips)
+   ---------------------------------------------------------------- */
+.stage-banner {
+  border-radius: var(--r-sm);
+  padding: 11px 16px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid;
+}
+
+.limiar-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--sh-xs);
+}
+
+.limiar-bar .lb-title {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-3);
+  margin-right: 4px;
+}
+
+.lchip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.lchip i { font-size: 9px; }
+.lc-o { background: var(--green-l);  color: var(--green-d); }
+.lc-b { background: var(--brand-l);  color: var(--brand-d); }
+.lc-r { background: var(--amber-l);  color: var(--amber-d); }
+.lc-l { background: var(--red-l);    color: var(--red-d); }
+
+/* ----------------------------------------------------------------
+   29. ALERTAS
+   ---------------------------------------------------------------- */
+.alerts-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--sh-sm);
+}
+
+.alerts-hd {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alerts-hd i { color: var(--amber); }
+
+.ac-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--amber-l);
+  color: var(--amber-d);
+  font-weight: 800;
+}
+
+.alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.alert-item i { flex-shrink: 0; margin-top: 1px; font-size: 12px; }
+.al-warn { background: var(--amber-l); border: 1px solid #fde68a; color: #78400a; }
+.al-ok   { background: var(--green-l); border: 1px solid #a7f3d0; color: #065f46; }
+.al-info { background: var(--brand-l); border: 1px solid #bfdbfe; color: #1e3a8a; }
+.al-err  { background: var(--red-l);   border: 1px solid #fca5a5; color: var(--red-d); }
+
+/* ----------------------------------------------------------------
+   30. TABELA DE PERFORMANCE
+   ---------------------------------------------------------------- */
+.perf-tbl-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--sh-sm);
+}
+
+.ptc-hd {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ptc-hd-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-1);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ptc-hd-title i { color: var(--brand); font-size: 12px; }
+.ptc-meta { font-size: 11.5px; color: var(--text-3); font-weight: 600; }
+
+.p-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.p-table thead tr { background: #0d1526; }
+.p-table th {
+  padding: 11px 18px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,.65);
+  white-space: nowrap;
+}
+
+.p-table tbody tr { border-bottom: 1px solid var(--border-2); transition: background 0.12s; }
+.p-table tbody tr:hover { background: var(--surface-2); }
+.p-table tbody tr:last-child { border-bottom: none; }
+.p-table td { padding: 10px 18px; }
+.td-id { font-family: var(--mono); font-weight: 600; font-size: 12px; color: var(--text-1); }
+
+/* ----------------------------------------------------------------
+   31. BADGES
+   ---------------------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge-blue   { background: var(--brand-l);  color: var(--brand); }
+.badge-green  { background: var(--green-l);  color: var(--green-d); }
+.badge-amber  { background: var(--amber-l);  color: var(--amber-d); }
+.badge-red    { background: var(--red-l);    color: var(--red-d); }
+.badge-cyan   { background: var(--cyan-l);   color: var(--cyan); }
+
+.b-pq { background: var(--cyan-l);   color: #0e7490; }
+.b-md { background: var(--green-l);  color: var(--green-d); }
+.b-gd { background: var(--amber-l);  color: var(--amber-d); }
+.b-mg { background: var(--violet-l); color: #5b21b6; }
+
+.ebadge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.eb-o { background: var(--green-l);  color: var(--green-d); }
+.eb-b { background: var(--brand-l);  color: var(--brand-d); }
+.eb-r { background: var(--amber-l);  color: var(--amber-d); }
+.eb-l { background: var(--red-l);    color: var(--red-d); }
+
+/* ----------------------------------------------------------------
+   32. BARRA DE PROGRESSO INLINE
+   ---------------------------------------------------------------- */
+.ibar { display: flex; align-items: center; gap: 7px; }
+.ibar-track { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; min-width: 50px; }
+.ibar-fill  { height: 100%; border-radius: 3px; transition: width 0.3s; }
+.ibar-fill.c-g { background: var(--green-2); }
+.ibar-fill.c-b { background: var(--brand-3); }
+.ibar-fill.c-a { background: var(--amber); }
+.ibar-fill.c-r { background: var(--red); }
+.ibar-val { font-size: 11px; color: var(--text-3); white-space: nowrap; font-family: var(--mono); font-weight: 500; }
+
+/* ----------------------------------------------------------------
+   33. PAGINAÇÃO
+   ---------------------------------------------------------------- */
+.p-pag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 22px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-3);
+  font-weight: 600;
+}
+
+.pag-btns { display: flex; gap: 3px; }
+
+.pbtn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-family: var(--font);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: var(--t-fast);
+}
+
+.pbtn:hover:not(:disabled) { background: var(--brand); color: var(--text-inv); border-color: var(--brand); }
+.pbtn.active { background: var(--brand); color: var(--text-inv); border-color: var(--brand); }
+.pbtn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ----------------------------------------------------------------
+   34. GESTÃO DE VOLUNTÁRIOS
+   ---------------------------------------------------------------- */
+.gestao-wrap { max-width: 1100px; }
+
+.g-stats { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+
+.g-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-3);
+  box-shadow: var(--sh-xs);
+}
+
+.g-dot { width: 8px; height: 8px; border-radius: 50%; }
+.g-dot.all    { background: var(--brand); }
+.g-dot.active { background: var(--green-2); }
+.g-dot.inact  { background: var(--text-4); }
+.g-stat b { color: var(--text-1); font-size: 16px; font-weight: 800; }
+
+.g-toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+
+.g-toolbar input {
+  flex: 1;
+  min-width: 200px;
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 13px;
+  outline: none;
+  background: var(--surface);
+  transition: var(--t);
+}
+
+.g-toolbar input:focus { border-color: var(--brand); }
+
+.g-toolbar select {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 13px;
+  outline: none;
+  background: var(--surface);
+  color: var(--text-1);
+  cursor: pointer;
+}
+
+.gbtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid;
+  transition: var(--t);
+}
+
+.gbtn-primary { background: var(--brand);  color: var(--text-inv); border-color: var(--brand); }
+.gbtn-primary:hover { background: var(--brand-d); }
+.gbtn-success { background: var(--green);  color: var(--text-inv); border-color: var(--green); }
+.gbtn-success:hover { background: var(--green-d); }
+.gbtn-danger  { background: var(--red-l);  color: var(--red-d); border-color: #fca5a5; }
+.gbtn-danger:hover { background: #fecaca; }
+.gbtn-default { background: var(--surface); color: var(--text-2); border-color: var(--border); }
+.gbtn-default:hover { background: var(--surface-2); }
+.gbtn-add { background: #f0fdf4; color: var(--green-d); border-color: #86efac; }
+.gbtn-add:hover { background: var(--green-l); }
+
+.g-tbl-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--sh-sm);
+}
+
+.g-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.g-table thead tr { background: #0d1526; }
+.g-table th {
+  padding: 12px 18px;
+  text-align: left;
+  color: rgba(255,255,255,.65);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.g-table tbody tr { border-bottom: 1px solid var(--border-2); transition: background 0.12s; }
+.g-table tbody tr:hover { background: var(--surface-2); }
+.g-table tbody tr:last-child { border-bottom: none; }
+.g-table td { padding: 12px 18px; }
+
+.schip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.schip .dot { width: 6px; height: 6px; border-radius: 50%; }
+.schip-a { background: var(--green-l); color: var(--green-d); }
+.schip-a .dot { background: var(--green-2); }
+.schip-i { background: var(--surface-3); color: var(--text-3); }
+.schip-i .dot { background: var(--text-4); }
+
+.tbtn {
+  padding: 5px 12px;
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid;
+  transition: var(--t-fast);
+}
+
+.tbtn-inat { background: var(--red-l);   color: var(--red-d); border-color: #fca5a5; }
+.tbtn-inat:hover { background: #fecaca; }
+.tbtn-ativ { background: var(--green-l); color: var(--green-d); border-color: #86efac; }
+.tbtn-ativ:hover { background: #dcfce7; }
+.tbtn-del  { background: transparent; color: var(--text-4); border-color: transparent; margin-left: 4px; }
+.tbtn-del:hover { background: var(--red-l); color: var(--red-d); border-color: #fca5a5; }
+
+.g-note { margin-top: 12px; font-size: 11.5px; color: var(--text-3); display: flex; align-items: center; gap: 6px; font-weight: 500; }
+
+/* ----------------------------------------------------------------
+   35. SOURCE CHIPS
+   ---------------------------------------------------------------- */
+.src-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.src-planilha { background: var(--brand-l);  color: var(--brand-d); }
+.src-manual   { background: var(--violet-l); color: #5b21b6; }
+
+/* ----------------------------------------------------------------
+   36. EMPTY STATE
+   ---------------------------------------------------------------- */
+.empty-stage {
+  text-align: center;
+  padding: 70px 20px;
+  color: var(--text-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-sm);
+}
+
+.empty-stage i { font-size: 38px; opacity: 0.2; margin-bottom: 16px; display: block; }
+.empty-stage p { font-size: 13px; font-weight: 600; }
+.empty-stage small { font-size: 11.5px; opacity: 0.7; margin-top: 6px; display: block; }
+
+/* ----------------------------------------------------------------
+   37. HISTÓRICO DE PERFORMANCE
+   ---------------------------------------------------------------- */
+.hist-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  box-shadow: var(--sh-sm);
+  margin-bottom: 20px;
+}
+
+.hist-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-2);
+}
+
+.hist-hd-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hist-hd-title i { color: var(--brand); font-size: 12px; }
+.hist-chart { height: 220px; position: relative; }
+
+/* ----------------------------------------------------------------
+   38. CENTRAL OPERACIONAL — SIDEBAR
+   ---------------------------------------------------------------- */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--bg-sidebar, var(--surface));
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 2px 0 12px rgba(15, 28, 46, 0.04);
+  z-index: 10;
+}
+
+.sidebar-header {
+  padding: 22px 22px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--surface);
+}
+
+.sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+
+.logo-badge {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, var(--brand) 0%, #4f8ef7 100%);
+  border-radius: var(--r);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  flex-shrink: 0;
+}
+
+.logo-text { font-size: 14px; font-weight: 700; color: var(--text-1); line-height: 1.2; letter-spacing: -0.3px; }
+.logo-sub  { font-family: var(--mono); font-size: 9px; color: var(--text-3); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+
+.sidebar-body { flex: 1; overflow-y: auto; padding: 18px; background: var(--surface-2); }
+
+/* ----------------------------------------------------------------
+   39. CENTRAL — BUSCA
+   ---------------------------------------------------------------- */
+.search-wrap { position: relative; margin-bottom: 12px; }
+
+.search-input {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 11px 44px 11px 16px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-1);
+  transition: var(--t);
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--brand);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px var(--brand-glow);
+}
+
+.search-input::placeholder { color: var(--text-3); }
+
+.search-eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-3);
+  font-size: 15px;
+  padding: 5px;
+  border-radius: var(--r-sm);
+  transition: var(--t);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-eye:hover { color: var(--brand); background: var(--brand-l); }
+
+/* ----------------------------------------------------------------
+   40. CAMPOS GENERICOS DE FORMULÁRIO
+   ---------------------------------------------------------------- */
+.label-field {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  display: block;
+  margin-bottom: 7px;
+}
+
+.select-field,
+.input-field {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 11px 16px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-1);
+  outline: none;
+  transition: var(--t);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.select-field:focus,
+.input-field:focus {
+  border-color: var(--brand);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px var(--brand-glow);
+}
+
+textarea.input-field {
+  resize: vertical;
+  min-height: 70px;
+  line-height: 1.6;
+}
+
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--text-3);
+  pointer-events: none;
+}
+
+.btn-search-full {
+  width: 100%;
+  padding: 12px;
+  background: var(--brand);
+  color: var(--text-inv);
+  border: none;
+  border-radius: var(--r);
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--t);
+  letter-spacing: 0.2px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.22);
+}
+
+.btn-search-full:hover {
+  background: var(--brand-d);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.32);
+  transform: translateY(-1px);
+}
+
+/* ----------------------------------------------------------------
+   41. CENTRAL — RESULT CARD
+   ---------------------------------------------------------------- */
+.result-card {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--sh-sm);
+  animation: ijc-fade-up 0.22s ease;
+}
+
+.result-card.visible { display: block; }
+
+.result-header {
+  padding: 14px 18px;
+  background: linear-gradient(135deg, var(--brand) 0%, #4f8ef7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.result-tomo {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-inv);
+  letter-spacing: 0.5px;
+}
+
+.result-id {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: rgba(255,255,255,.70);
+  background: rgba(255,255,255,.15);
+  padding: 3px 9px;
+  border-radius: 99px;
+}
+
+.result-body { padding: 4px 0; }
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 18px;
+  border-bottom: 1px solid var(--border-2);
+  gap: 12px;
+}
+
+.result-row:last-child { border-bottom: none; }
+
+.result-key {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.result-val {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-1);
+  text-align: right;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.result-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px;
+  font-size: 13px;
+  color: var(--red);
+  font-family: var(--mono);
+  background: var(--red-l);
+}
+
+/* ----------------------------------------------------------------
+   42. CENTRAL — ÁREA PRINCIPAL
+   ---------------------------------------------------------------- */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+.main-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 28px 32px 40px;
+}
+
+/* ----------------------------------------------------------------
+   43. CENTRAL — TABS
+   ---------------------------------------------------------------- */
+.section-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 4px;
+  margin-bottom: 24px;
+  box-shadow: var(--sh-sm);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+  transition: var(--t);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: var(--r);
+}
+
+.tab-btn:hover { color: var(--text-1); background: var(--surface-2); }
+
+.tab-btn.active {
+  color: var(--brand);
+  background: var(--brand-l);
+  font-weight: 600;
+  box-shadow: var(--sh-sm);
+}
+
+.tab-pane          { display: none; }
+.tab-pane.active   { display: block; }
+
+/* ----------------------------------------------------------------
+   44. CENTRAL — GRIDS E CAMPOS
+   ---------------------------------------------------------------- */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr;             gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr;         gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr);      gap: 16px; }
+
+.field-group { display: flex; flex-direction: column; gap: 7px; }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+/* ----------------------------------------------------------------
+   45. BOTÕES CENTRAIS
+   ---------------------------------------------------------------- */
+.btn-primary,
+.btn-success,
+.btn-danger,
+.btn-outlook {
+  padding: 12px 22px;
+  border: none;
+  border-radius: var(--r);
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--t);
+  letter-spacing: 0.2px;
+}
+
+.btn-primary {
+  background: var(--brand);
+  color: var(--text-inv);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.22);
+}
+.btn-primary:hover { background: var(--brand-d); box-shadow: 0 4px 16px rgba(37, 99, 235, 0.32); transform: translateY(-1px); }
+
+.btn-success {
+  background: var(--green);
+  color: var(--text-inv);
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.22);
+}
+.btn-success:hover { background: var(--green-d); box-shadow: 0 4px 16px rgba(5, 150, 105, 0.32); transform: translateY(-1px); }
+
+.btn-danger {
+  background: var(--red);
+  color: var(--text-inv);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.20);
+}
+.btn-danger:hover { background: var(--red-d); box-shadow: 0 4px 16px rgba(220, 38, 38, 0.30); transform: translateY(-1px); }
+
+.btn-outlook {
+  background: #0078d4;
+  color: var(--text-inv);
+  box-shadow: 0 2px 8px rgba(0, 120, 212, 0.22);
+}
+.btn-outlook:hover { background: #006cbf; box-shadow: 0 4px 16px rgba(0, 120, 212, 0.32); transform: translateY(-1px); }
+
+.btn-full { width: 100%; justify-content: center; }
+button:active { transform: translateY(0) !important; }
+
+/* ----------------------------------------------------------------
+   46. SECTION DIVIDER
+   ---------------------------------------------------------------- */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 22px 0 18px;
+}
+
+.section-divider-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--brand);
+  flex-shrink: 0;
+  background: var(--brand-l);
+  padding: 4px 10px;
+  border-radius: 99px;
+}
+
+.section-divider-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ----------------------------------------------------------------
+   47. INFO TIP
+   ---------------------------------------------------------------- */
+.info-tip {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.6;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 6px;
+}
+
+.info-tip span { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+/* ----------------------------------------------------------------
+   48. CHECKBOXES DE EXCLUSÃO
+   ---------------------------------------------------------------- */
+.delete-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.delete-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 11px 14px;
+  cursor: pointer;
+  transition: var(--t);
+  user-select: none;
+}
+
+.delete-item:hover { background: var(--red-l); border-color: #fca5a5; }
+.delete-item.checked { background: var(--red-l); border-color: var(--red); }
+
+.delete-item input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--red);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.delete-item span { font-size: 12px; font-weight: 500; color: var(--text-2); }
+.delete-item.checked span { color: var(--red); }
+
+/* ----------------------------------------------------------------
+   49. ENVIO / OUTLOOK
+   ---------------------------------------------------------------- */
+.envio-list {
+  display: none;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--brand);
+  margin-top: 18px;
+  line-height: 1.9;
+}
+
+.envio-list.visible { display: block; }
+
+.tomo-preview-list { display: none; margin-top: 16px; }
+.tomo-preview-list.visible { display: block; }
+
+.preview-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.preview-table th {
+  padding: 10px 16px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.preview-table th:not(:last-child) { border-right: 1px solid var(--border-2); }
+
+.preview-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border-2);
+  color: var(--text-1);
+  vertical-align: middle;
+  font-weight: 400;
+}
+
+.preview-table tr:last-child td { border-bottom: none; }
+.preview-table tr:hover td { background: var(--surface-2); }
+.preview-table .col-id { font-family: var(--mono); color: var(--text-3); font-size: 11px; }
+.preview-table .col-tomo { font-family: var(--mono); color: var(--brand); font-weight: 600; }
+
+/* ----------------------------------------------------------------
+   50. MENSAGENS DE STATUS
+   ---------------------------------------------------------------- */
+.msg-status {
+  margin-top: 14px;
+  padding: 13px 18px;
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 500;
+  display: none;
+  line-height: 1.5;
+}
+
+.msg-status.visible { display: block; }
+.msg-ok  { background: var(--green-l); border: 1px solid rgba(5, 150, 105, 0.20); color: var(--green-d); }
+.msg-err { background: var(--red-l);   border: 1px solid rgba(220, 38, 38, 0.20); color: var(--red); }
+
+/* ----------------------------------------------------------------
+   51. MISC — FIELD LABELS EXTRAS
+   ---------------------------------------------------------------- */
+.field-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: 0.5px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.field-required::after { content: ' *'; color: var(--red); font-size: 12px; }
+
+/* ----------------------------------------------------------------
+   52. RESPONSIVIDADE
+   ---------------------------------------------------------------- */
+@media (max-width: 1200px) {
+  .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  .perf-overview { grid-template-columns: 180px 1fr 1fr; }
+}
+
+@media (max-width: 960px) {
+  :root { --sidebar-w: 280px; }
+
+  .dash-grid { grid-template-columns: 1fr; }
+  .vol-sidebar { height: auto; max-height: 360px; }
+
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .perf-charts { grid-template-columns: 1fr; }
+  .pcard.full  { grid-column: 1; }
+
+  .perf-kpi-grid { grid-template-columns: 1fr 1fr; }
+
+  .container { padding: 18px 16px; }
+  .main-inner { padding: 18px 16px 32px; }
+}
+
+@media (max-width: 720px) {
+  body.layout-central { flex-direction: column; }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+  }
+
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .delete-grid { grid-template-columns: 1fr 1fr; }
+
+  .perf-overview { grid-template-columns: 1fr; }
+  .po-score { border-right: none; border-bottom: 1px solid rgba(255,255,255,.1); padding-right: 0; padding-bottom: 16px; }
+
+  .topbar { padding: 0 16px; }
+  .nav-rail { padding: 0 8px; overflow-x: auto; }
+}
+
+/* ----------------------------------------------------------------
+   53. PRINT
+   ---------------------------------------------------------------- */
+@media print {
+  .topbar, .nav-rail, .perf-filters, .btn-top, .vol-sidebar,
+  .btn-dp-close, .p-pag, .g-toolbar, .stage-nav,
+  .modal-overlay, #modal-overlay, .sidebar { display: none !important; }
+
+  body.layout-central .main { overflow: visible; }
+  .dash-grid { display: block; }
+  body { background: #fff; }
+  #loader, #global-loader { display: none !important; }
+}
+</head>
+<body>
+
+<!-- ============================================================
+     LOADER
+     ============================================================ -->
+<div id="loader">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Processando...</div>
+</div>
+
+<!-- ============================================================
+     MODAL DE CONFIRMAÇÃO
+     ============================================================ -->
+<div id="modal-overlay">
+  <div class="modal-box">
+    <div class="modal-icon-wrap">📤</div>
+    <div class="modal-title">Confirmar Envio de Tomos</div>
+    <div class="modal-body">
+      Esta ação irá <strong>automaticamente</strong> atualizar os seguintes campos para cada tomo da lista:
+      <br><br>
+      • <strong>Etapa</strong> → Devolvido &nbsp;•&nbsp; <strong>Visão</strong> → CONCLUÍDO<br>
+      • <strong>Notificação</strong> → Sim &nbsp;•&nbsp; <strong>Data</strong> → Hoje
+    </div>
+    <div class="modal-title" style="font-size:13px; margin-bottom:6px;">Tomos que serão processados:</div>
+    <div class="modal-list" id="modal-list-tomos"></div>
+    <div class="modal-actions">
+      <button class="modal-btn modal-btn-cancel" onclick="fecharModal()">✕ Cancelar</button>
+      <button class="modal-btn modal-btn-confirm" onclick="confirmarEnvio()">✓ Confirmar e Enviar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     SIDEBAR
+     ============================================================ -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">
+      <div class="logo-badge">📋</div>
+      <div>
+        <div class="logo-text">Laudos IJC</div>
+        <div class="logo-sub">Sistema Integrado</div>
+      </div>
+    </div>
+
+    <div class="search-wrap">
+      <input class="search-input" id="tomoBusca" placeholder="Número do tomo...">
+      <button class="search-eye" onclick="ir()" title="Navegar até o tomo na planilha">👁️</button>
+    </div>
+
+    <div class="field-group" style="margin-bottom:12px;">
+      <label class="label-field">Filtrar por etapa</label>
+      <div class="select-wrap">
+        <select class="select-field" id="etapaBusca">
+          <option>DESM1</option><option>DESM2</option>
+          <option>ETIQ1</option><option>ETIQ2</option>
+          <option>DIG1</option><option>DIG2</option><option>DIG3</option>
+          <option>CLA1</option><option>CLA2</option>
+          <option>DEV</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="btn-search-full" onclick="buscar()">
+      <span>🔍</span> Buscar Tomo
+    </button>
+  </div>
+
+  <div class="sidebar-body">
+    <div class="result-card" id="resultado"></div>
+  </div>
+</aside>
+
+<!-- ============================================================
+     ÁREA PRINCIPAL
+     ============================================================ -->
+<main class="main">
+  <div class="main-inner">
+
+    <!-- TABS -->
+    <div class="section-tabs">
+      <button class="tab-btn active" onclick="trocarTab('aba-atualizar', this)">
+        ✏️ Atualizar
+      </button>
+      <button class="tab-btn" onclick="trocarTab('aba-excluir', this)">
+        🗑️ Excluir
+      </button>
+      <button class="tab-btn" onclick="trocarTab('aba-envio', this)">
+        📤 Envio Outlook
+      </button>
+    </div>
+
+    <!-- ===== ABA: ATUALIZAR ===== -->
+    <div class="tab-pane active" id="aba-atualizar">
+      <div class="content-card">
+        <div class="card-header">
+          <div class="card-header-icon icon-blue">✏️</div>
+          <div>
+            <div class="card-title">Atualizar Informações do Tomo</div>
+          </div>
+          <span class="card-subtitle">Campos em branco são ignorados</span>
+        </div>
+        <div class="card-body">
+
+          <!-- Dados gerais -->
+          <div class="field-section-label">Identificação</div>
+          <div class="grid-4" style="margin-bottom:20px;">
+            <div class="field-group">
+              <label class="label-field field-required">Tomo</label>
+              <input class="input-field" id="tomo" placeholder="Ex: 12345">
+            </div>
+            <div class="field-group">
+              <label class="label-field">ID</label>
+              <input class="input-field" id="id" placeholder="Ex: 000123">
+            </div>
+            <div class="field-group">
+              <label class="label-field">Qtd Prontuários</label>
+              <input class="input-field" id="qtdPront" type="number" placeholder="0">
+            </div>
+            <div class="field-group">
+              <label class="label-field">Qtd Documentos</label>
+              <input class="input-field" id="qtdDoc" type="number" placeholder="0">
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:20px;">
+            <div class="field-group">
+              <label class="label-field">Alterar Etapa Atual</label>
+              <div class="select-wrap">
+                <select class="select-field" id="etapa">
+                  <option value="">— Manter atual —</option>
+                  <option>Desmembrado</option>
+                  <option>Etiquetado</option>
+                  <option>Digitalizado</option>
+                  <option>Classificado</option>
+                  <option>Devolvido</option>
+                  <option>Com Pendência</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="label-field">Alterar Visão</label>
+              <div class="select-wrap">
+                <select class="select-field" id="visao">
+                  <option value="">— Manter atual —</option>
+                  <option>CONCLUÍDO</option>
+                  <option>EM REVISÃO</option>
+                  <option>PARA ETIQUETAR</option>
+                  <option>PARA DIGITALIZAR</option>
+                  <option>PARA CLASSIFICAR</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Dados da etapa -->
+          <div class="section-divider">
+            <span class="section-divider-label">Dados da Etapa Específica</span>
+            <span class="section-divider-line"></span>
+          </div>
+
+          <div class="field-group" style="margin-bottom:18px;">
+            <label class="label-field">Vincular à Etapa</label>
+            <div class="select-wrap">
+              <select class="select-field" id="etapaEditar">
+                <option value="">— Selecione a etapa —</option>
+                <option>DESM1</option><option>DESM2</option>
+                <option>ETIQ1</option><option>ETIQ2</option>
+                <option>DIG1</option><option>DIG2</option><option>DIG3</option>
+                <option>CLA1</option><option>CLA2</option>
+                <option>DEV</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="grid-2" style="margin-bottom:18px;">
+            <div class="field-group">
+              <label class="label-field">Voluntário 1</label>
+              <input class="input-field" id="vol1" placeholder="Nome completo">
+            </div>
+            <div class="field-group">
+              <label class="label-field">Voluntário 2</label>
+              <input class="input-field" id="vol2" placeholder="Nome completo">
+            </div>
+          </div>
+
+          <div class="grid-4" style="margin-bottom:18px;">
+            <div class="field-group" style="grid-column: span 2;">
+              <label class="label-field">Data de Execução</label>
+              <input class="input-field" type="date" id="data">
+            </div>
+            <div class="field-group">
+              <label class="label-field">Notificação (DEV)</label>
+              <div class="select-wrap">
+                <select class="select-field" id="email">
+                  <option value="">— Enviado? —</option>
+                  <option>Sim</option>
+                  <option>Não</option>
+                </select>
+              </div>
+            </div>
+            <div class="field-group">
+              <label class="label-field">Tempo (min)</label>
+              <input class="input-field" id="tempo" type="number" placeholder="Ex: 30">
+            </div>
+          </div>
+
+          <div class="field-group" style="margin-bottom:22px;">
+            <label class="label-field">Observações</label>
+            <textarea class="input-field" id="obs" placeholder="Digite observações adicionais..."></textarea>
+          </div>
+
+          <button class="btn-success btn-full" onclick="salvar()">
+            <span>💾</span> Salvar Alterações
+          </button>
+
+          <div class="msg-status" id="msg"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ABA: EXCLUIR ===== -->
+    <div class="tab-pane" id="aba-excluir">
+      <div class="content-card">
+        <div class="card-header">
+          <div class="card-header-icon icon-red">🗑️</div>
+          <div>
+            <div class="card-title">Limpar Dados do Tomo</div>
+          </div>
+          <span class="card-subtitle">Tomo definido na aba Atualizar</span>
+        </div>
+        <div class="card-body">
+
+          <div class="info-tip">
+            <span>ℹ️</span>
+            <span>O tomo a ser apagado é o mesmo informado no campo <strong>Tomo</strong> da aba Atualizar. Selecione os campos abaixo para limpeza.</span>
+          </div>
+
+          <hr class="divider">
+
+          <div class="field-group" style="margin-bottom:18px;">
+            <label class="label-field" style="color: var(--red);">Vincular Exclusão à Etapa</label>
+            <div class="select-wrap">
+              <select class="select-field" id="etapaExcluir" style="border-color: #fca5a5;">
+                <option value="">— Selecione (obrigatório para dados de etapa) —</option>
+                <option>DESM1</option><option>DESM2</option>
+                <option>ETIQ1</option><option>ETIQ2</option>
+                <option>DIG1</option><option>DIG2</option><option>DIG3</option>
+                <option>CLA1</option><option>CLA2</option>
+                <option>DEV</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-section-label">Campos para limpar</div>
+
+          <div class="delete-grid" id="delete-grid">
+            <label class="delete-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="del_id"> <span>🔢 ID</span>
+            </label>
+            <label class="delete-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="del_qtdPront"> <span>📄 Qtd Prontuários</span>
+            </label>
+            <label class="delete-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="del_qtdDoc"> <span>📁 Qtd Documentos</span>
+            </label>
+            <label class="delete-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="del_etapa"> <span>🏷️ Etapa Atual</span>
+            </label>
+            <label class="delete-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="del_visao"> <span>👁️ Visão</span>
+            </label>
+            <label class="delete-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="del_vol"> <span>👤 Voluntários</span>
+            </label>
+            <label class="delete-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="del_data"> <span>📅 Data</span>
+            </label>
+            <label class="delete-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="del_tempo"> <span>⏱️ Tempo</span>
+            </label>
+            <label class="delete-item" onclick="toggleCheck(this)">
+              <input type="checkbox" id="del_obs"> <span>📝 Observações</span>
+            </label>
+          </div>
+
+          <button class="btn-danger btn-full" style="margin-top:22px;" onclick="excluir()">
+            <span>🗑️</span> Excluir Campos Marcados
+          </button>
+
+          <div class="msg-status" id="msg-excluir"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ABA: ENVIO OUTLOOK ===== -->
+    <div class="tab-pane" id="aba-envio">
+      <div class="content-card">
+        <div class="card-header">
+          <div class="card-header-icon icon-amber">📤</div>
+          <div>
+            <div class="card-title">Gerar Lista &amp; Enviar via Outlook</div>
+          </div>
+          <span class="card-subtitle">Atualização automática ao confirmar</span>
+        </div>
+        <div class="card-body">
+
+          <div class="field-group" style="margin-bottom:18px;">
+            <label class="label-field">Lista de Tomos (um por linha)</label>
+            <textarea class="input-field" id="tomosEnvio"
+              placeholder="Cole os números dos tomos aqui, um por linha..."
+              style="height:120px;"
+              oninput="limparPreview()"></textarea>
+          </div>
+
+          <div class="grid-2">
+            <button class="btn-primary" onclick="gerarPreviewEnvio()">
+              <span>📋</span> Pré-visualizar Lista
+            </button>
+            <button class="btn-outlook" onclick="abrirModalConfirmacao()">
+              <span>📧</span> Confirmar e Enviar
+            </button>
+          </div>
+
+          <!-- Preview -->
+          <div class="tomo-preview-list" id="tomo-preview-list">
+            <div class="section-divider" style="margin-top:22px;">
+              <span class="section-divider-label">Preview</span>
+              <span class="section-divider-line"></span>
+            </div>
+            <table class="preview-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Tomo</th>
+                  <th>Etapa Atual</th>
+                  <th>Visão</th>
+                </tr>
+              </thead>
+              <tbody id="preview-tbody"></tbody>
+            </table>
+          </div>
+
+          <!-- Lista formatada final -->
+          <div class="envio-list" id="listaEnvio"></div>
+
+          <div class="msg-status" id="msg-envio"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /main-inner -->
+</main>
+
+<!-- ============================================================
+     JAVASCRIPT — LÓGICA 100% PRESERVADA
+     ============================================================ -->
+<script>
+/* ──────────────────────────────────────────────
+   ESTADO GLOBAL
+   ────────────────────────────────────────────── */
+var listaFinal = "";
+var tomosParaEnviar = [];
+var dadosPreview = [];
+
+/* ──────────────────────────────────────────────
+   UTILITÁRIOS
+   ────────────────────────────────────────────── */
+function loading(show) {
+  document.getElementById("loader").classList.toggle("active", show);
+}
+
+function showMsg(id, texto, ok) {
+  var el = document.getElementById(id);
+  el.textContent = texto;
+  el.className = "msg-status visible " + (ok ? "msg-ok" : "msg-err");
+}
+
+function toggleCheck(label) {
+  var cb = label.querySelector("input[type='checkbox']");
+  label.classList.toggle("checked", cb.checked);
+}
+
+function trocarTab(id, btn) {
+  document.querySelectorAll(".tab-pane").forEach(function (p) { p.classList.remove("active"); });
+  document.querySelectorAll(".tab-btn").forEach(function (b) { b.classList.remove("active"); });
+  document.getElementById(id).classList.add("active");
+  btn.classList.add("active");
+}
+
+/* ──────────────────────────────────────────────
+   RENDERIZAR RESULTADO DA BUSCA
+   ────────────────────────────────────────────── */
+function visaoBadge(v) {
+  if (!v) return '<span class="badge badge-red">Sem visão</span>';
+  var lower = v.toLowerCase();
+  if (lower.includes("conclu")) return '<span class="badge badge-green">' + v + '</span>';
+  if (lower.includes("revis")) return '<span class="badge badge-amber">' + v + '</span>';
+  return '<span class="badge badge-blue">' + v + '</span>';
+}
+
+function etapaBadge(e) {
+  if (!e) return '<span class="badge badge-red">Sem etapa</span>';
+  return '<span class="badge badge-cyan">' + e + '</span>';
+}
+
+function renderizarBusca(r) {
+  var card = document.getElementById("resultado");
+  card.className = "result-card visible";
+
+  if (!r || !r.encontrado) {
+    card.innerHTML = '<div class="result-error">❌ Tomo não encontrado</div>';
+    return;
+  }
+
+  var obsFormatada = (r.obs && r.obs.toString().trim() !== "") ? r.obs : "—";
+  var emailHtml = r.email
+    ? '<div class="result-row"><span class="result-key">E-mail</span><span class="result-val">' + r.email + '</span></div>'
+    : '';
+
+  card.innerHTML =
+    '<div class="result-header">' +
+      '<span class="result-tomo">' + r.tomo + '</span>' +
+      '<span class="result-id">ID ' + r.id + '</span>' +
+    '</div>' +
+    '<div class="result-body">' +
+      '<div class="result-row"><span class="result-key">Etapa</span><span class="result-val">' + etapaBadge(r.etapaAtual) + '</span></div>' +
+      '<div class="result-row"><span class="result-key">Visão</span><span class="result-val">' + visaoBadge(r.visao) + '</span></div>' +
+      '<div class="result-row"><span class="result-key">Voluntário</span><span class="result-val">' + (r.voluntario || "—") + '</span></div>' +
+      '<div class="result-row"><span class="result-key">Data</span><span class="result-val">' + r.data + '</span></div>' +
+      '<div class="result-row"><span class="result-key">Tempo</span><span class="result-val">' + r.tempo + '</span></div>' +
+      '<div class="result-row"><span class="result-key">Obs</span><span class="result-val">' + obsFormatada + '</span></div>' +
+      emailHtml +
+    '</div>';
+}
+
+/* ──────────────────────────────────────────────
+   BUSCAR
+   ────────────────────────────────────────────── */
+function buscar() {
+  var tomo = document.getElementById("tomoBusca").value.trim();
+  var etapa = document.getElementById("etapaBusca").value;
+  if (!tomo) { alert("Digite um número de tomo."); return; }
+
+  loading(true);
+  google.script.run
+    .withSuccessHandler(function (r) {
+      loading(false);
+      renderizarBusca(r);
+    })
+    .withFailureHandler(function (err) {
+      loading(false);
+      alert("Erro na busca: " + err);
+    })
+    .buscarTomoPainel(tomo, etapa);
+}
+
+function ir() {
+  var tomo = document.getElementById("tomoBusca").value.trim();
+  if (!tomo) { alert("Digite um número de tomo."); return; }
+  google.script.run.irParaTomo(tomo);
+}
+
+/* ──────────────────────────────────────────────
+   SALVAR
+   ────────────────────────────────────────────── */
+function salvar() {
+  var tomo = document.getElementById("tomo").value.trim();
+  if (!tomo) { alert("O campo 'Tomo' é obrigatório."); return; }
+
+  loading(true);
+
+  var d = {
+    tomo: tomo,
+    id: document.getElementById("id").value,
+    qtdPront: document.getElementById("qtdPront").value,
+    qtdDoc: document.getElementById("qtdDoc").value,
+    etapaEditar: document.getElementById("etapaEditar").value,
+    vol1: document.getElementById("vol1").value,
+    vol2: document.getElementById("vol2").value,
+    data: document.getElementById("data").value,
+    tempo: document.getElementById("tempo").value,
+    obs: document.getElementById("obs").value,
+    email: document.getElementById("email").value,
+    etapaBuscaAtual: document.getElementById("etapaBusca").value
+  };
+
+  var etapa = document.getElementById("etapa").value;
+  var visao = document.getElementById("visao").value;
+  if (etapa !== "") d.etapa = etapa;
+  if (visao !== "") d.visao = visao;
+
+  google.script.run
+    .withSuccessHandler(function (res) {
+      loading(false);
+      showMsg("msg", res.msg, res.status === "OK");
+      if (res.status === "OK") {
+        document.getElementById("tomoBusca").value = d.tomo;
+        if (res.busca) renderizarBusca(res.busca);
+      }
+    })
+    .withFailureHandler(function (err) {
+      loading(false);
+      alert("Erro ao salvar: " + err);
+    })
+    .atualizarTomo(d);
+}
+
+/* ──────────────────────────────────────────────
+   EXCLUIR
+   ────────────────────────────────────────────── */
+function excluir() {
+  var tomo = document.getElementById("tomo").value.trim();
+  if (!tomo) { alert("Preencha o campo 'Tomo' na aba Atualizar."); return; }
+
+  var cbs = document.querySelectorAll('#delete-grid input[type="checkbox"]');
+  var algum = Array.from(cbs).some(function (cb) { return cb.checked; });
+  if (!algum) { alert("Selecione pelo menos um campo para excluir."); return; }
+
+  var etapaExcluir = document.getElementById("etapaExcluir").value;
+
+  var d = {
+    tomo: tomo,
+    etapaExcluir: etapaExcluir,
+    del_id:       document.getElementById("del_id").checked,
+    del_qtdPront: document.getElementById("del_qtdPront").checked,
+    del_qtdDoc:   document.getElementById("del_qtdDoc").checked,
+    del_etapa:    document.getElementById("del_etapa").checked,
+    del_visao:    document.getElementById("del_visao").checked,
+    del_vol:      document.getElementById("del_vol").checked,
+    del_data:     document.getElementById("del_data").checked,
+    del_tempo:    document.getElementById("del_tempo").checked,
+    del_obs:      document.getElementById("del_obs").checked,
+    etapaBuscaAtual: document.getElementById("etapaBusca").value
+  };
+
+  if ((d.del_vol || d.del_data || d.del_tempo || d.del_obs) && !etapaExcluir) {
+    alert("⚠️ Para excluir Voluntários, Data, Tempo ou Observações, selecione a Etapa primeiro.");
+    return;
+  }
+
+  if (!confirm("Tem certeza que deseja apagar os campos marcados do tomo " + tomo + "?")) return;
+
+  loading(true);
+  google.script.run
+    .withSuccessHandler(function (res) {
+      loading(false);
+      showMsg("msg-excluir", res.msg, res.status === "OK");
+      if (res.status === "OK") {
+        cbs.forEach(function (cb) {
+          cb.checked = false;
+          cb.closest(".delete-item").classList.remove("checked");
+        });
+        document.getElementById("tomoBusca").value = d.tomo;
+        if (res.busca) renderizarBusca(res.busca);
+      }
+    })
+    .withFailureHandler(function (err) {
+      loading(false);
+      alert("Erro na exclusão: " + err);
+    })
+    .excluir(d);
+}
+
+/* ──────────────────────────────────────────────
+   ENVIO: PRÉ-VISUALIZAR
+   ────────────────────────────────────────────── */
+function limparPreview() {
+  document.getElementById("tomo-preview-list").classList.remove("visible");
+  document.getElementById("listaEnvio").classList.remove("visible");
+  document.getElementById("msg-envio").classList.remove("visible");
+  dadosPreview = [];
+  tomosParaEnviar = [];
+  listaFinal = "";
+}
+
+function gerarPreviewEnvio() {
+  var texto = document.getElementById("tomosEnvio").value.trim();
+  if (!texto) { alert("Cole a lista de tomos."); return; }
+
+  var lista = texto.split("\n").map(function (t) { return t.trim(); }).filter(function (t) { return t; });
+  if (!lista.length) { alert("Nenhum tomo válido encontrado."); return; }
+
+  lista.sort(function (a, b) {
+    var na = parseFloat(a), nb = parseFloat(b);
+    if (!isNaN(na) && !isNaN(nb)) return na - nb;
+    return a.localeCompare(b);
+  });
+
+  tomosParaEnviar = lista;
+  loading(true);
+
+  google.script.run
+    .withSuccessHandler(function (resultados) {
+      loading(false);
+      dadosPreview = resultados;
+
+      var tbody = document.getElementById("preview-tbody");
+      tbody.innerHTML = "";
+
+      resultados.forEach(function (r) {
+        var tr = document.createElement("tr");
+        if (r.encontrado) {
+          tr.innerHTML =
+            '<td class="col-id">' + (r.id || "—") + '</td>' +
+            '<td class="col-tomo">' + r.tomo + '</td>' +
+            '<td>' + (r.etapaAtual || "—") + '</td>' +
+            '<td>' + (r.visao || "—") + '</td>';
+        } else {
+          tr.innerHTML =
+            '<td colspan="4" style="color:var(--red); font-family:var(--mono); font-size:12px;">❌ ' + r.tomo + ' — não encontrado</td>';
+        }
+        tbody.appendChild(tr);
+      });
+
+      document.getElementById("tomo-preview-list").classList.add("visible");
+    })
+    .withFailureHandler(function (err) {
+      loading(false);
+      alert("Erro ao buscar tomos: " + err);
+    })
+    .buscarMultiplosTomos(lista);
+}
+
+/* ──────────────────────────────────────────────
+   ENVIO: MODAL E CONFIRMAÇÃO
+   ────────────────────────────────────────────── */
+function abrirModalConfirmacao() {
+  if (!tomosParaEnviar.length) {
+    alert("Clique em 'Pré-visualizar Lista' antes de confirmar o envio.");
+    return;
+  }
+  var listEl = document.getElementById("modal-list-tomos");
+  listEl.textContent = tomosParaEnviar.join("\n");
+  document.getElementById("modal-overlay").classList.add("active");
+}
+
+function fecharModal() {
+  document.getElementById("modal-overlay").classList.remove("active");
+}
+
+function confirmarEnvio() {
+  fecharModal();
+  loading(true);
+
+  google.script.run
+    .withSuccessHandler(function (resultados) {
+      google.script.run
+        .withSuccessHandler(function (listaFormatada) {
+          loading(false);
+          listaFinal = listaFormatada;
+
+          var divLista = document.getElementById("listaEnvio");
+          divLista.innerHTML = "<pre style='margin:0; font-size:12px;'>ID       - TOMO\n" + listaFormatada + "</pre>";
+          divLista.classList.add("visible");
+
+          showMsg("msg-envio", "✅ " + tomosParaEnviar.length + " tomo(s) atualizados com sucesso. Abrindo Outlook...", true);
+          setTimeout(function () { abrirOutlook(listaFormatada); }, 600);
+        })
+        .withFailureHandler(function (err) {
+          loading(false);
+          alert("Erro ao formatar lista: " + err);
+        })
+        .gerarListaEnvio(tomosParaEnviar.join("\n"));
+    })
+    .withFailureHandler(function (err) {
+      loading(false);
+      alert("Erro ao atualizar planilha: " + err);
+    })
+    .atualizarLoteEnvio(tomosParaEnviar);
+}
+
+/* ──────────────────────────────────────────────
+   ABRIR OUTLOOK COM EMAIL FORMATADO
+   ────────────────────────────────────────────── */
+function abrirOutlook(lista) {
+  var hora = new Date().getHours();
+  var saudacao = hora < 12 ? "Bom dia" : hora < 18 ? "Boa tarde" : "Boa noite";
+
+  var linhasLista = lista.split("\n");
+  var separador = "─".repeat(48);
+
+  var linhasTabela = [
+    separador,
+    padRight("ID", 10) + "│ " + "TOMO",
+    separador
+  ];
+
+  linhasLista.forEach(function (linha) {
+    linhasTabela.push(linha.replace(" - ", "  │ "));
+  });
+  linhasTabela.push(separador);
+
+  var hoje = new Date();
+  var dataFormatada = hoje.toLocaleDateString("pt-BR", { day: "2-digit", month: "2-digit", year: "numeric" });
+
+  var corpo =
+    saudacao + ", Bruno.\n\n" +
+    "Encaminho para devolução os prontuários relacionados abaixo,\n" +
+    "referentes à data de " + dataFormatada + ".\n\n" +
+    linhasTabela.join("\n") + "\n\n" +
+    "Atenciosamente,\n" +
+    "Renan";
+
+  var url = "https://outlook.office.com/mail/deeplink/compose?" +
+    "to=" + encodeURIComponent("bruno.xavier@ijc.org.br") +
+    "&cc=" + encodeURIComponent("livea.carla@ijc.org.br") +
+    "&subject=" + encodeURIComponent("Devolução de Prontuários — " + dataFormatada) +
+    "&body=" + encodeURIComponent(corpo);
+
+  window.open(url, "_blank");
+}
+
+function padRight(str, len) {
+  while (str.length < len) str += " ";
+  return str;
+}
+
+/* ──────────────────────────────────────────────
+   LEGACY
+   ────────────────────────────────────────────── */
+function gerarEnvio() {
+  gerarPreviewEnvio();
+}
+
+/* ──────────────────────────────────────────────
+   ENTER PARA BUSCAR
+   ────────────────────────────────────────────── */
+document.getElementById("tomoBusca").addEventListener("keydown", function (e) {
+  if (e.key === "Enter") buscar();
+});
+</script>
+<script src="script.js"></script>
+</body>
+</html>

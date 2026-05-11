@@ -1,0 +1,3843 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <link rel="stylesheet" href="styles.css">
+  <base target="_top">
+  <meta charset="UTF-8">
+  <title>Analytics Dashboard v5</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+
+:root {
+  /* Paleta principal */
+  --brand:        #1847c2;
+  --brand-2:      #2358d9;
+  --brand-3:      #3a6ef5;
+  --brand-l:      #e4ecff;
+  --brand-d:      #0f35a0;
+  --brand-glow:   rgba(24, 71, 194, 0.12);
+
+  /* Superfícies */
+  --bg:           #f0f3f9;
+  --surface:      #ffffff;
+  --surface-2:    #f7f9fc;
+  --surface-3:    #edf1f8;
+  --glass:        rgba(255, 255, 255, 0.85);
+
+  /* Bordas */
+  --border:       #dde3ef;
+  --border-2:     #e8ecf5;
+  --border-focus: #c7d7f8;
+
+  /* Texto */
+  --text-1:   #0d1526;
+  --text-2:   #374461;
+  --text-3:   #7385a8;
+  --text-4:   #a8b5cc;
+  --text-inv: #ffffff;
+
+  /* Status semânticos */
+  --green:    #059669;
+  --green-2:  #12c58a;
+  --green-l:  #e0f5ed;
+  --green-d:  #047857;
+  --amber:    #d97706;
+  --amber-l:  #fef3e2;
+  --amber-d:  #b45309;
+  --red:      #dc2626;
+  --red-l:    #fee2e2;
+  --red-d:    #b91c1c;
+  --cyan:     #0891b2;
+  --cyan-l:   #ecfeff;
+  --indigo:   #5b50e8;
+  --indigo-l: #eeeeff;
+  --violet:   #7c3aed;
+  --violet-l: #f3f0ff;
+  --slate:    #64748b;
+
+  /* Etapas */
+  --desm-c:   #64748b; --desm-l: #f1f5f9;
+  --etiq-c:   #d97706; --etiq-l: #fef3e2;
+  --dig-c:    #1847c2; --dig-l:  #e4ecff;
+  --cla-c:    #059669; --cla-l:  #e0f5ed;
+
+  /* Raios */
+  --r-xs:  4px;
+  --r-sm:  7px;
+  --r:     10px;
+  --r-lg:  16px;
+  --r-xl:  22px;
+
+  /* Sombras */
+  --sh-xs: 0 1px 2px rgba(13, 21, 38, .04), 0 1px 4px rgba(13, 21, 38, .03);
+  --sh-sm: 0 2px 8px rgba(13, 21, 38, .06), 0 1px 3px rgba(13, 21, 38, .04);
+  --sh-md: 0 4px 20px rgba(13, 21, 38, .08), 0 2px 8px rgba(13, 21, 38, .04);
+  --sh-lg: 0 8px 36px rgba(13, 21, 38, .10), 0 3px 12px rgba(13, 21, 38, .05);
+  --sh-xl: 0 16px 56px rgba(13, 21, 38, .13), 0 6px 18px rgba(13, 21, 38, .06);
+
+  /* Tipografia */
+  --font:      'Plus Jakarta Sans', system-ui, sans-serif;
+  --mono:      'JetBrains Mono', 'DM Mono', monospace;
+  --font-sans: 'DM Sans', sans-serif;
+
+  /* Transições */
+  --t:     all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+  --t-fast: all 0.12s ease;
+
+  /* Dimensões */
+  --sidebar-w: 320px;
+  --topbar-h:  60px;
+  --nav-h:     46px;
+}
+
+/* ----------------------------------------------------------------
+   2. RESET & BASE
+   ---------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 14px;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text-1);
+  font-size: 13.5px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Layout raiz para a Central Operacional */
+body.layout-central {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* Layout raiz para o Dashboard */
+body.layout-dashboard {
+  display: block;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+/* ----------------------------------------------------------------
+   3. SCROLLBAR CUSTOMIZADA
+   ---------------------------------------------------------------- */
+::-webkit-scrollbar          { width: 6px; height: 6px; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-4); }
+
+/* ----------------------------------------------------------------
+   4. LOADER GLOBAL
+   ---------------------------------------------------------------- */
+#loader,
+#global-loader {
+  position: fixed;
+  inset: 0;
+  background: rgba(240, 243, 249, 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 9999;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  transition: opacity 0.4s ease;
+}
+
+#loader:not(.active),
+#global-loader.hide {
+  opacity: 0;
+  pointer-events: none;
+  display: none;
+}
+
+#loader.active { display: flex; }
+
+.loader-ring {
+  width: 44px;
+  height: 44px;
+  border: 3px solid var(--border);
+  border-top-color: var(--brand);
+  border-radius: 50%;
+  animation: ijc-spin 0.75s linear infinite;
+}
+
+.loader-text,
+.loader-txt {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--text-3);
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+@keyframes ijc-spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ----------------------------------------------------------------
+   5. TOAST / NOTIFICAÇÕES
+   ---------------------------------------------------------------- */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  display: none;
+  align-items: center;
+  gap: 9px;
+  padding: 12px 18px;
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-inv);
+  box-shadow: var(--sh-xl);
+  z-index: 10000;
+  animation: ijc-toast-in 0.22s ease;
+  max-width: 380px;
+}
+
+#toast.vis    { display: flex; }
+#toast.success { background: #065f46; }
+#toast.error   { background: var(--red-d); }
+#toast.info    { background: var(--brand-d); }
+
+@keyframes ijc-toast-in {
+  from { transform: translateY(10px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ----------------------------------------------------------------
+   6. MODAIS
+   ---------------------------------------------------------------- */
+.modal-overlay,
+#modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(13, 21, 38, 0.45);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  z-index: 5000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  animation: ijc-fade-in 0.2s ease;
+}
+
+.modal-overlay.open,
+#modal-overlay.active { display: flex; }
+
+@keyframes ijc-fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+.modal-box {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-xl);
+  box-shadow: var(--sh-xl);
+  padding: 32px;
+  width: 480px;
+  max-width: 95vw;
+  animation: ijc-slide-up 0.22s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes ijc-slide-up {
+  from { transform: scale(0.92) translateY(12px); opacity: 0; }
+  to   { transform: scale(1)    translateY(0);    opacity: 1; }
+}
+
+.modal-icon-wrap {
+  width: 52px;
+  height: 52px;
+  background: var(--brand-l);
+  border-radius: var(--r-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  margin-bottom: 18px;
+}
+
+.modal-hd,
+.modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin-bottom: 16px;
+  letter-spacing: -0.3px;
+}
+
+.modal-hd i { font-size: 14px; }
+
+.modal-body {
+  font-size: 13px;
+  color: var(--text-2);
+  line-height: 1.7;
+  margin-bottom: 10px;
+}
+
+.modal-body strong { color: var(--text-1); font-weight: 600; }
+
+.modal-label {
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-3);
+  margin-bottom: 6px;
+  display: block;
+}
+
+.modal-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 13.5px;
+  color: var(--text-1);
+  outline: none;
+  transition: var(--t);
+  background: var(--surface-2);
+}
+
+.modal-input:focus {
+  border-color: var(--brand);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px var(--brand-glow);
+}
+
+.modal-list {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--brand);
+  max-height: 160px;
+  overflow-y: auto;
+  margin: 14px 0 22px;
+  line-height: 1.8;
+}
+
+.modal-confirm-msg {
+  font-size: 13.5px;
+  color: var(--text-2);
+  line-height: 1.6;
+  margin-bottom: 4px;
+}
+
+.modal-confirm-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--red);
+  background: var(--red-l);
+  border-radius: var(--r-sm);
+  padding: 8px 14px;
+  margin: 12px 0;
+  display: inline-block;
+}
+
+.modal-btns,
+.modal-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 22px;
+  justify-content: flex-end;
+}
+
+/* ----------------------------------------------------------------
+   7. TOPBAR (Dashboard)
+   ---------------------------------------------------------------- */
+.topbar {
+  height: var(--topbar-h);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 0 var(--border), var(--sh-xs);
+}
+
+.topbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(140deg, var(--brand-3), var(--brand-d));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(24, 71, 194, 0.35);
+  flex-shrink: 0;
+}
+
+.brand-mark i { color: var(--text-inv); font-size: 15px; }
+
+.brand-text-wrap .brand-name {
+  font-size: 15px;
+  font-weight: 800;
+  color: var(--text-1);
+  letter-spacing: -0.3px;
+  line-height: 1.1;
+}
+
+.brand-text-wrap .brand-sub {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--text-3);
+  letter-spacing: 0.1px;
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ----------------------------------------------------------------
+   8. BADGE LIVE
+   ---------------------------------------------------------------- */
+.badge-live {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background: var(--green-l);
+  border: 1px solid #6ee7b7;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--green-d);
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green-2);
+  animation: ijc-pulse 2s infinite;
+}
+
+@keyframes ijc-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50%       { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* ----------------------------------------------------------------
+   9. CONTROLES DA TOPBAR
+   ---------------------------------------------------------------- */
+.ctrl-capsule {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.ctrl-capsule i { font-size: 12px; color: var(--text-3); }
+
+.ctrl-capsule select {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--brand);
+  cursor: pointer;
+}
+
+.btn-top {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: var(--t);
+}
+
+.btn-top:hover {
+  background: var(--brand);
+  color: var(--text-inv);
+  border-color: var(--brand);
+}
+
+/* ----------------------------------------------------------------
+   10. NAV RAIL (Dashboard tabs)
+   ---------------------------------------------------------------- */
+.nav-rail {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 28px;
+  display: flex;
+  gap: 2px;
+}
+
+.nav-btn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 0 16px;
+  height: var(--nav-h);
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-3);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  transition: var(--t);
+}
+
+.nav-btn i { font-size: 12px; }
+.nav-btn:hover:not(.active) { color: var(--text-2); }
+.nav-btn.active { color: var(--brand); border-bottom-color: var(--brand); }
+
+/* ----------------------------------------------------------------
+   11. PANELS / PAINÉIS
+   ---------------------------------------------------------------- */
+.panel          { display: none; }
+.panel.active   { display: block; }
+
+.container {
+  padding: 24px 28px;
+  max-width: 1600px;
+  margin: 0 auto;
+}
+
+/* ----------------------------------------------------------------
+   12. KPI GRID (Dashboard)
+   ---------------------------------------------------------------- */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+  margin-bottom: 22px;
+}
+
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px 22px;
+  box-shadow: var(--sh-sm);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.kpi:hover { transform: translateY(-2px); box-shadow: var(--sh-md); }
+
+.kpi-accent {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+
+.kpi-lbl {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: var(--text-3);
+  margin-bottom: 10px;
+}
+
+.kpi-val {
+  font-size: 30px;
+  font-weight: 800;
+  color: var(--text-1);
+  line-height: 1;
+  letter-spacing: -0.6px;
+}
+
+.kpi-sub {
+  font-size: 11px;
+  color: var(--text-3);
+  margin-top: 5px;
+}
+
+.kpi-icon-bg {
+  position: absolute;
+  right: 18px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 26px;
+  opacity: 0.06;
+}
+
+/* ----------------------------------------------------------------
+   13. STAGE STRIP (chips de resumo)
+   ---------------------------------------------------------------- */
+.stage-strip {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.stage-chip {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-2);
+  box-shadow: var(--sh-xs);
+}
+
+.stage-chip .dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stage-chip b { font-weight: 800; color: var(--text-1); }
+.stage-chip .sep { color: var(--text-4); }
+
+/* ----------------------------------------------------------------
+   14. DASHBOARD GRID (2 colunas)
+   ---------------------------------------------------------------- */
+.dash-grid {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 18px;
+}
+
+/* ----------------------------------------------------------------
+   15. SIDEBAR DE VOLUNTÁRIOS (Dashboard)
+   ---------------------------------------------------------------- */
+.vol-sidebar {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-sm);
+  display: flex;
+  flex-direction: column;
+  height: 780px;
+  overflow: hidden;
+}
+
+.vs-head {
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
+.vs-head h4 {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--text-1);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.vs-head h4 i { color: var(--brand); }
+
+.vs-search {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 12.5px;
+  outline: none;
+  background: var(--surface-2);
+  color: var(--text-1);
+  transition: var(--t);
+}
+
+.vs-search:focus { border-color: var(--brand); }
+.vs-list { overflow-y: auto; flex: 1; }
+
+.vs-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  cursor: pointer;
+  border-left: 3px solid transparent;
+  transition: var(--t);
+}
+
+.vs-item:hover {
+  background: var(--surface-2);
+  border-left-color: var(--brand);
+}
+
+.vs-item-name {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 12.5px;
+  color: var(--text-1);
+  font-weight: 600;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--green-2);
+  flex-shrink: 0;
+}
+
+.status-dot.off { background: var(--text-4); }
+
+.vs-badge {
+  font-size: 11px;
+  font-weight: 800;
+  background: var(--brand-l);
+  color: var(--brand);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+
+/* ----------------------------------------------------------------
+   16. CARDS GERAIS
+   ---------------------------------------------------------------- */
+.charts-stack { display: flex; flex-direction: column; gap: 16px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  box-shadow: var(--sh-sm);
+}
+
+.card-hd {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-2);
+}
+
+.card-hd i { color: var(--brand); font-size: 12px; }
+
+/* Card para Central Operacional */
+.content-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: var(--sh-sm);
+  transition: var(--t);
+}
+
+.content-card:hover { box-shadow: var(--sh-md); }
+
+.card-header {
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: var(--surface);
+}
+
+.card-header-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  flex-shrink: 0;
+}
+
+.icon-blue   { background: var(--brand-l); }
+.icon-green  { background: var(--green-l); }
+.icon-red    { background: var(--red-l); }
+.icon-amber  { background: var(--amber-l); }
+
+.card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-1);
+  letter-spacing: -0.2px;
+}
+
+.card-subtitle {
+  font-size: 12px;
+  color: var(--text-3);
+  margin-left: auto;
+  font-weight: 400;
+}
+
+.card-body { padding: 24px; }
+
+/* ----------------------------------------------------------------
+   17. CHARTS
+   ---------------------------------------------------------------- */
+.chart-box          { position: relative; height: 300px; }
+.chart-box.md       { height: 260px; }
+.donut-box          { height: 300px; display: flex; justify-content: center; }
+.donut-box canvas   { max-width: 430px; }
+
+/* ----------------------------------------------------------------
+   18. FILTER ROW (Dashboard)
+   ---------------------------------------------------------------- */
+.filter-row {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 12px 18px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  box-shadow: var(--sh-xs);
+}
+
+.fr-label {
+  font-size: 10.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-3);
+}
+
+/* ----------------------------------------------------------------
+   19. TOGGLE SWITCH
+   ---------------------------------------------------------------- */
+.toggle-wrap { display: flex; align-items: center; gap: 8px; }
+
+.toggle {
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 22px;
+  flex-shrink: 0;
+}
+
+.toggle input { opacity: 0; width: 0; height: 0; }
+
+.t-track {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 22px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.t-thumb {
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background: var(--text-inv);
+  border-radius: 50%;
+  top: 3px;
+  left: 3px;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+}
+
+.toggle input:checked ~ .t-track { background: var(--brand); }
+.toggle input:checked ~ .t-thumb { transform: translateX(18px); }
+
+.toggle-lbl {
+  font-size: 12.5px;
+  color: var(--text-2);
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------------------
+   20. DETAILS PANEL (Voluntário)
+   ---------------------------------------------------------------- */
+.details-panel {
+  display: none;
+  background: var(--text-1);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  position: relative;
+  animation: ijc-fade-up 0.22s ease;
+}
+
+@keyframes ijc-fade-up {
+  from { opacity: 0; transform: translateY(-8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dp-title {
+  color: #7dd3fc;
+  font-size: 13.5px;
+  font-weight: 800;
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-right: 36px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-dp-close {
+  position: absolute;
+  top: 16px;
+  right: 18px;
+  background: rgba(255, 255, 255, 0.08);
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  font-size: 16px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 5px 8px;
+  border-radius: 6px;
+  transition: var(--t);
+}
+
+.btn-dp-close:hover { background: var(--red); color: var(--text-inv); }
+
+.dp-row {
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: var(--r-sm);
+  padding: 10px 14px;
+  margin-bottom: 6px;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  font-size: 11.5px;
+}
+
+.dp-row span {
+  color: var(--text-3);
+  font-size: 10.5px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.dp-row b {
+  color: var(--text-inv);
+  display: block;
+  font-size: 12.5px;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+/* ----------------------------------------------------------------
+   21. INFO BAR
+   ---------------------------------------------------------------- */
+.info-bar {
+  display: none;
+  align-items: center;
+  gap: 10px;
+  background: var(--brand-l);
+  border: 1px solid #c5d8fd;
+  border-radius: var(--r-sm);
+  padding: 10px 16px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--brand);
+}
+
+.info-bar.vis { display: flex; }
+
+/* ----------------------------------------------------------------
+   22. PERFORMANCE — STAGE NAV
+   ---------------------------------------------------------------- */
+.stage-nav {
+  display: flex;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  margin-bottom: 20px;
+  box-shadow: var(--sh-sm);
+}
+
+.stage-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 14px 12px;
+  border: none;
+  background: transparent;
+  font-family: var(--font);
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-3);
+  cursor: pointer;
+  border-right: 1px solid var(--border);
+  transition: var(--t);
+}
+
+.stage-tab:last-child  { border-right: none; }
+.stage-tab:hover:not(.active) { background: var(--surface-2); color: var(--text-2); }
+.stage-tab.active      { background: var(--text-1); color: var(--text-inv); }
+
+.stage-tab .s-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.stage-tab .s-badge {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.12);
+  color: rgba(255, 255, 255, 0.75);
+  font-weight: 700;
+}
+
+.stage-tab:not(.active) .s-badge {
+  background: var(--surface-3);
+  color: var(--text-3);
+}
+
+/* ----------------------------------------------------------------
+   23. PERFORMANCE OVERVIEW (painel escuro)
+   ---------------------------------------------------------------- */
+.perf-overview {
+  background: linear-gradient(135deg, #0d1526 0%, #1a2d58 100%);
+  border-radius: var(--r-lg);
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  display: grid;
+  grid-template-columns: 200px 1fr 1fr 1fr;
+  gap: 20px;
+  align-items: center;
+  box-shadow: var(--sh-lg);
+}
+
+.po-score { text-align: center; border-right: 1px solid rgba(255,255,255,.1); padding-right: 20px; }
+
+.po-score-val {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+  background: linear-gradient(135deg, #60a5fa, #34d399);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -2px;
+}
+
+.po-score-lbl {
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(255,255,255,.5);
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.po-class { font-size: 13px; font-weight: 800; color: var(--text-inv); margin-top: 4px; }
+
+.po-item                { display: flex; flex-direction: column; gap: 4px; }
+.po-item-lbl            { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: rgba(255,255,255,.4); }
+.po-item-val            { font-size: 18px; font-weight: 800; color: var(--text-inv); }
+.po-item-sub            { font-size: 11px; color: rgba(255,255,255,.5); }
+
+.po-gargalo {
+  background: rgba(220,38,38,.15);
+  border: 1px solid rgba(220,38,38,.3);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+}
+
+.po-melhor {
+  background: rgba(5,150,105,.15);
+  border: 1px solid rgba(5,150,105,.3);
+  border-radius: var(--r-sm);
+  padding: 8px 12px;
+}
+
+/* ----------------------------------------------------------------
+   24. PERFORMANCE — KPI GRID
+   ---------------------------------------------------------------- */
+.perf-kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.pkpi {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px 18px;
+  box-shadow: var(--sh-xs);
+  border-top: 3px solid var(--brand);
+  transition: transform 0.18s, box-shadow 0.18s;
+}
+
+.pkpi:hover { transform: translateY(-1px); box-shadow: var(--sh-sm); }
+.pkpi.g { border-top-color: var(--green); }
+.pkpi.a { border-top-color: var(--amber); }
+.pkpi.r { border-top-color: var(--red); }
+.pkpi.i { border-top-color: var(--indigo); }
+.pkpi.c { border-top-color: var(--cyan); }
+.pkpi.v { border-top-color: var(--violet); }
+
+.pk-lbl {
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--text-3);
+  margin-bottom: 6px;
+}
+
+.pk-val {
+  font-size: 22px;
+  font-weight: 800;
+  color: var(--text-1);
+  letter-spacing: -0.4px;
+  line-height: 1.1;
+}
+
+.pk-sub { font-size: 10.5px; color: var(--text-3); margin-top: 4px; }
+
+/* ----------------------------------------------------------------
+   25. PERFORMANCE — CHARTS GRID
+   ---------------------------------------------------------------- */
+.perf-charts {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.pcard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  box-shadow: var(--sh-sm);
+}
+
+.pcard.full { grid-column: 1 / -1; }
+
+.pcard-title {
+  font-size: 12.5px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin-bottom: 14px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-2);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.pcard-title i { font-size: 11px; }
+
+.pc-wrap        { position: relative; height: 240px; }
+.pc-wrap.tall   { height: 280px; }
+.pc-wrap.xtall  { height: 300px; }
+
+/* ----------------------------------------------------------------
+   26. PERFORMANCE — FILTROS
+   ---------------------------------------------------------------- */
+.perf-filters {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 14px 20px;
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  box-shadow: var(--sh-xs);
+}
+
+.pf-grp           { display: flex; flex-direction: column; gap: 4px; }
+.pf-grp label     { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.6px; color: var(--text-3); }
+
+.pf-sel,
+.pf-inp {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 12.5px;
+  outline: none;
+  color: var(--text-1);
+  background: var(--surface-2);
+  transition: var(--t);
+  min-width: 150px;
+}
+
+.pf-sel:focus,
+.pf-inp:focus { border-color: var(--brand); }
+.pf-inp       { min-width: 180px; }
+
+/* ----------------------------------------------------------------
+   27. BOTÕES DE AÇÃO (performance)
+   ---------------------------------------------------------------- */
+.pfbtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 16px;
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid;
+  transition: var(--t);
+  align-self: flex-end;
+}
+
+.pfbtn-primary { background: var(--brand); color: var(--text-inv); border-color: var(--brand); }
+.pfbtn-primary:hover { background: var(--brand-d); }
+.pfbtn-ghost { background: var(--surface); color: var(--text-2); border-color: var(--border); }
+.pfbtn-ghost:hover { background: var(--surface-2); color: var(--brand); border-color: var(--brand); }
+
+/* ----------------------------------------------------------------
+   28. LIMIARES (chips)
+   ---------------------------------------------------------------- */
+.stage-banner {
+  border-radius: var(--r-sm);
+  padding: 11px 16px;
+  margin-bottom: 16px;
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid;
+}
+
+.limiar-bar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  margin-bottom: 18px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  box-shadow: var(--sh-xs);
+}
+
+.limiar-bar .lb-title {
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--text-3);
+  margin-right: 4px;
+}
+
+.lchip {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.lchip i { font-size: 9px; }
+.lc-o { background: var(--green-l);  color: var(--green-d); }
+.lc-b { background: var(--brand-l);  color: var(--brand-d); }
+.lc-r { background: var(--amber-l);  color: var(--amber-d); }
+.lc-l { background: var(--red-l);    color: var(--red-d); }
+
+/* ----------------------------------------------------------------
+   29. ALERTAS
+   ---------------------------------------------------------------- */
+.alerts-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--sh-sm);
+}
+
+.alerts-hd {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-1);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alerts-hd i { color: var(--amber); }
+
+.ac-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  background: var(--amber-l);
+  color: var(--amber-d);
+  font-weight: 800;
+}
+
+.alerts-list {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.alert-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: var(--r-sm);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.alert-item i { flex-shrink: 0; margin-top: 1px; font-size: 12px; }
+.al-warn { background: var(--amber-l); border: 1px solid #fde68a; color: #78400a; }
+.al-ok   { background: var(--green-l); border: 1px solid #a7f3d0; color: #065f46; }
+.al-info { background: var(--brand-l); border: 1px solid #bfdbfe; color: #1e3a8a; }
+.al-err  { background: var(--red-l);   border: 1px solid #fca5a5; color: var(--red-d); }
+
+/* ----------------------------------------------------------------
+   30. TABELA DE PERFORMANCE
+   ---------------------------------------------------------------- */
+.perf-tbl-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--sh-sm);
+}
+
+.ptc-hd {
+  padding: 16px 22px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.ptc-hd-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-1);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.ptc-hd-title i { color: var(--brand); font-size: 12px; }
+.ptc-meta { font-size: 11.5px; color: var(--text-3); font-weight: 600; }
+
+.p-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+.p-table thead tr { background: #0d1526; }
+.p-table th {
+  padding: 11px 18px;
+  text-align: left;
+  font-size: 10px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: rgba(255,255,255,.65);
+  white-space: nowrap;
+}
+
+.p-table tbody tr { border-bottom: 1px solid var(--border-2); transition: background 0.12s; }
+.p-table tbody tr:hover { background: var(--surface-2); }
+.p-table tbody tr:last-child { border-bottom: none; }
+.p-table td { padding: 10px 18px; }
+.td-id { font-family: var(--mono); font-weight: 600; font-size: 12px; color: var(--text-1); }
+
+/* ----------------------------------------------------------------
+   31. BADGES
+   ---------------------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge-blue   { background: var(--brand-l);  color: var(--brand); }
+.badge-green  { background: var(--green-l);  color: var(--green-d); }
+.badge-amber  { background: var(--amber-l);  color: var(--amber-d); }
+.badge-red    { background: var(--red-l);    color: var(--red-d); }
+.badge-cyan   { background: var(--cyan-l);   color: var(--cyan); }
+
+.b-pq { background: var(--cyan-l);   color: #0e7490; }
+.b-md { background: var(--green-l);  color: var(--green-d); }
+.b-gd { background: var(--amber-l);  color: var(--amber-d); }
+.b-mg { background: var(--violet-l); color: #5b21b6; }
+
+.ebadge { display: inline-flex; align-items: center; gap: 4px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.eb-o { background: var(--green-l);  color: var(--green-d); }
+.eb-b { background: var(--brand-l);  color: var(--brand-d); }
+.eb-r { background: var(--amber-l);  color: var(--amber-d); }
+.eb-l { background: var(--red-l);    color: var(--red-d); }
+
+/* ----------------------------------------------------------------
+   32. BARRA DE PROGRESSO INLINE
+   ---------------------------------------------------------------- */
+.ibar { display: flex; align-items: center; gap: 7px; }
+.ibar-track { flex: 1; height: 5px; background: var(--border); border-radius: 3px; overflow: hidden; min-width: 50px; }
+.ibar-fill  { height: 100%; border-radius: 3px; transition: width 0.3s; }
+.ibar-fill.c-g { background: var(--green-2); }
+.ibar-fill.c-b { background: var(--brand-3); }
+.ibar-fill.c-a { background: var(--amber); }
+.ibar-fill.c-r { background: var(--red); }
+.ibar-val { font-size: 11px; color: var(--text-3); white-space: nowrap; font-family: var(--mono); font-weight: 500; }
+
+/* ----------------------------------------------------------------
+   33. PAGINAÇÃO
+   ---------------------------------------------------------------- */
+.p-pag {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 22px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--text-3);
+  font-weight: 600;
+}
+
+.pag-btns { display: flex; gap: 3px; }
+
+.pbtn {
+  padding: 5px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  font-family: var(--font);
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-2);
+  cursor: pointer;
+  transition: var(--t-fast);
+}
+
+.pbtn:hover:not(:disabled) { background: var(--brand); color: var(--text-inv); border-color: var(--brand); }
+.pbtn.active { background: var(--brand); color: var(--text-inv); border-color: var(--brand); }
+.pbtn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+/* ----------------------------------------------------------------
+   34. GESTÃO DE VOLUNTÁRIOS
+   ---------------------------------------------------------------- */
+.gestao-wrap { max-width: 1100px; }
+
+.g-stats { display: flex; gap: 10px; margin-bottom: 18px; flex-wrap: wrap; }
+
+.g-stat {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 10px 18px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  color: var(--text-3);
+  box-shadow: var(--sh-xs);
+}
+
+.g-dot { width: 8px; height: 8px; border-radius: 50%; }
+.g-dot.all    { background: var(--brand); }
+.g-dot.active { background: var(--green-2); }
+.g-dot.inact  { background: var(--text-4); }
+.g-stat b { color: var(--text-1); font-size: 16px; font-weight: 800; }
+
+.g-toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; margin-bottom: 16px; }
+
+.g-toolbar input {
+  flex: 1;
+  min-width: 200px;
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 13px;
+  outline: none;
+  background: var(--surface);
+  transition: var(--t);
+}
+
+.g-toolbar input:focus { border-color: var(--brand); }
+
+.g-toolbar select {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 13px;
+  outline: none;
+  background: var(--surface);
+  color: var(--text-1);
+  cursor: pointer;
+}
+
+.gbtn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 16px;
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid;
+  transition: var(--t);
+}
+
+.gbtn-primary { background: var(--brand);  color: var(--text-inv); border-color: var(--brand); }
+.gbtn-primary:hover { background: var(--brand-d); }
+.gbtn-success { background: var(--green);  color: var(--text-inv); border-color: var(--green); }
+.gbtn-success:hover { background: var(--green-d); }
+.gbtn-danger  { background: var(--red-l);  color: var(--red-d); border-color: #fca5a5; }
+.gbtn-danger:hover { background: #fecaca; }
+.gbtn-default { background: var(--surface); color: var(--text-2); border-color: var(--border); }
+.gbtn-default:hover { background: var(--surface-2); }
+.gbtn-add { background: #f0fdf4; color: var(--green-d); border-color: #86efac; }
+.gbtn-add:hover { background: var(--green-l); }
+
+.g-tbl-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--sh-sm);
+}
+
+.g-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.g-table thead tr { background: #0d1526; }
+.g-table th {
+  padding: 12px 18px;
+  text-align: left;
+  color: rgba(255,255,255,.65);
+  font-size: 10.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.g-table tbody tr { border-bottom: 1px solid var(--border-2); transition: background 0.12s; }
+.g-table tbody tr:hover { background: var(--surface-2); }
+.g-table tbody tr:last-child { border-bottom: none; }
+.g-table td { padding: 12px 18px; }
+
+.schip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 11.5px;
+  font-weight: 700;
+}
+
+.schip .dot { width: 6px; height: 6px; border-radius: 50%; }
+.schip-a { background: var(--green-l); color: var(--green-d); }
+.schip-a .dot { background: var(--green-2); }
+.schip-i { background: var(--surface-3); color: var(--text-3); }
+.schip-i .dot { background: var(--text-4); }
+
+.tbtn {
+  padding: 5px 12px;
+  border-radius: var(--r-sm);
+  font-family: var(--font);
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+  border: 1px solid;
+  transition: var(--t-fast);
+}
+
+.tbtn-inat { background: var(--red-l);   color: var(--red-d); border-color: #fca5a5; }
+.tbtn-inat:hover { background: #fecaca; }
+.tbtn-ativ { background: var(--green-l); color: var(--green-d); border-color: #86efac; }
+.tbtn-ativ:hover { background: #dcfce7; }
+.tbtn-del  { background: transparent; color: var(--text-4); border-color: transparent; margin-left: 4px; }
+.tbtn-del:hover { background: var(--red-l); color: var(--red-d); border-color: #fca5a5; }
+
+.g-note { margin-top: 12px; font-size: 11.5px; color: var(--text-3); display: flex; align-items: center; gap: 6px; font-weight: 500; }
+
+/* ----------------------------------------------------------------
+   35. SOURCE CHIPS
+   ---------------------------------------------------------------- */
+.src-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 10px;
+  font-weight: 700;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+.src-planilha { background: var(--brand-l);  color: var(--brand-d); }
+.src-manual   { background: var(--violet-l); color: #5b21b6; }
+
+/* ----------------------------------------------------------------
+   36. EMPTY STATE
+   ---------------------------------------------------------------- */
+.empty-stage {
+  text-align: center;
+  padding: 70px 20px;
+  color: var(--text-3);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  box-shadow: var(--sh-sm);
+}
+
+.empty-stage i { font-size: 38px; opacity: 0.2; margin-bottom: 16px; display: block; }
+.empty-stage p { font-size: 13px; font-weight: 600; }
+.empty-stage small { font-size: 11.5px; opacity: 0.7; margin-top: 6px; display: block; }
+
+/* ----------------------------------------------------------------
+   37. HISTÓRICO DE PERFORMANCE
+   ---------------------------------------------------------------- */
+.hist-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  box-shadow: var(--sh-sm);
+  margin-bottom: 20px;
+}
+
+.hist-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-2);
+}
+
+.hist-hd-title {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--text-1);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hist-hd-title i { color: var(--brand); font-size: 12px; }
+.hist-chart { height: 220px; position: relative; }
+
+/* ----------------------------------------------------------------
+   38. CENTRAL OPERACIONAL — SIDEBAR
+   ---------------------------------------------------------------- */
+.sidebar {
+  width: var(--sidebar-w);
+  background: var(--bg-sidebar, var(--surface));
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 2px 0 12px rgba(15, 28, 46, 0.04);
+  z-index: 10;
+}
+
+.sidebar-header {
+  padding: 22px 22px 18px;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  background: var(--surface);
+}
+
+.sidebar-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+
+.logo-badge {
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(135deg, var(--brand) 0%, #4f8ef7 100%);
+  border-radius: var(--r);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+  flex-shrink: 0;
+}
+
+.logo-text { font-size: 14px; font-weight: 700; color: var(--text-1); line-height: 1.2; letter-spacing: -0.3px; }
+.logo-sub  { font-family: var(--mono); font-size: 9px; color: var(--text-3); letter-spacing: 1.5px; text-transform: uppercase; margin-top: 2px; }
+
+.sidebar-body { flex: 1; overflow-y: auto; padding: 18px; background: var(--surface-2); }
+
+/* ----------------------------------------------------------------
+   39. CENTRAL — BUSCA
+   ---------------------------------------------------------------- */
+.search-wrap { position: relative; margin-bottom: 12px; }
+
+.search-input {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 11px 44px 11px 16px;
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--text-1);
+  transition: var(--t);
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: var(--brand);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px var(--brand-glow);
+}
+
+.search-input::placeholder { color: var(--text-3); }
+
+.search-eye {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--text-3);
+  font-size: 15px;
+  padding: 5px;
+  border-radius: var(--r-sm);
+  transition: var(--t);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.search-eye:hover { color: var(--brand); background: var(--brand-l); }
+
+/* ----------------------------------------------------------------
+   40. CAMPOS GENERICOS DE FORMULÁRIO
+   ---------------------------------------------------------------- */
+.label-field {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--text-3);
+  display: block;
+  margin-bottom: 7px;
+}
+
+.select-field,
+.input-field {
+  width: 100%;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 11px 16px;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-1);
+  outline: none;
+  transition: var(--t);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.select-field:focus,
+.input-field:focus {
+  border-color: var(--brand);
+  background: var(--surface);
+  box-shadow: 0 0 0 4px var(--brand-glow);
+}
+
+textarea.input-field {
+  resize: vertical;
+  min-height: 70px;
+  line-height: 1.6;
+}
+
+.select-wrap { position: relative; }
+.select-wrap::after {
+  content: '';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--text-3);
+  pointer-events: none;
+}
+
+.btn-search-full {
+  width: 100%;
+  padding: 12px;
+  background: var(--brand);
+  color: var(--text-inv);
+  border: none;
+  border-radius: var(--r);
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: var(--t);
+  letter-spacing: 0.2px;
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.22);
+}
+
+.btn-search-full:hover {
+  background: var(--brand-d);
+  box-shadow: 0 4px 16px rgba(37, 99, 235, 0.32);
+  transform: translateY(-1px);
+}
+
+/* ----------------------------------------------------------------
+   41. CENTRAL — RESULT CARD
+   ---------------------------------------------------------------- */
+.result-card {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  box-shadow: var(--sh-sm);
+  animation: ijc-fade-up 0.22s ease;
+}
+
+.result-card.visible { display: block; }
+
+.result-header {
+  padding: 14px 18px;
+  background: linear-gradient(135deg, var(--brand) 0%, #4f8ef7 100%);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.result-tomo {
+  font-family: var(--mono);
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-inv);
+  letter-spacing: 0.5px;
+}
+
+.result-id {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: rgba(255,255,255,.70);
+  background: rgba(255,255,255,.15);
+  padding: 3px 9px;
+  border-radius: 99px;
+}
+
+.result-body { padding: 4px 0; }
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 9px 18px;
+  border-bottom: 1px solid var(--border-2);
+  gap: 12px;
+}
+
+.result-row:last-child { border-bottom: none; }
+
+.result-key {
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--text-3);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+  flex-shrink: 0;
+}
+
+.result-val {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-1);
+  text-align: right;
+  line-height: 1.4;
+  word-break: break-word;
+}
+
+.result-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 18px;
+  font-size: 13px;
+  color: var(--red);
+  font-family: var(--mono);
+  background: var(--red-l);
+}
+
+/* ----------------------------------------------------------------
+   42. CENTRAL — ÁREA PRINCIPAL
+   ---------------------------------------------------------------- */
+.main {
+  flex: 1;
+  overflow-y: auto;
+  background: var(--bg);
+}
+
+.main-inner {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 28px 32px 40px;
+}
+
+/* ----------------------------------------------------------------
+   43. CENTRAL — TABS
+   ---------------------------------------------------------------- */
+.section-tabs {
+  display: flex;
+  gap: 2px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 4px;
+  margin-bottom: 24px;
+  box-shadow: var(--sh-sm);
+}
+
+.tab-btn {
+  flex: 1;
+  padding: 10px 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-3);
+  transition: var(--t);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border-radius: var(--r);
+}
+
+.tab-btn:hover { color: var(--text-1); background: var(--surface-2); }
+
+.tab-btn.active {
+  color: var(--brand);
+  background: var(--brand-l);
+  font-weight: 600;
+  box-shadow: var(--sh-sm);
+}
+
+.tab-pane          { display: none; }
+.tab-pane.active   { display: block; }
+
+/* ----------------------------------------------------------------
+   44. CENTRAL — GRIDS E CAMPOS
+   ---------------------------------------------------------------- */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr;             gap: 16px; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr;         gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(4, 1fr);      gap: 16px; }
+
+.field-group { display: flex; flex-direction: column; gap: 7px; }
+
+.divider { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+
+/* ----------------------------------------------------------------
+   45. BOTÕES CENTRAIS
+   ---------------------------------------------------------------- */
+.btn-primary,
+.btn-success,
+.btn-danger,
+.btn-outlook {
+  padding: 12px 22px;
+  border: none;
+  border-radius: var(--r);
+  font-family: var(--font);
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--t);
+  letter-spacing: 0.2px;
+}
+
+.btn-primary {
+  background: var(--brand);
+  color: var(--text-inv);
+  box-shadow: 0 2px 8px rgba(37, 99, 235, 0.22);
+}
+.btn-primary:hover { background: var(--brand-d); box-shadow: 0 4px 16px rgba(37, 99, 235, 0.32); transform: translateY(-1px); }
+
+.btn-success {
+  background: var(--green);
+  color: var(--text-inv);
+  box-shadow: 0 2px 8px rgba(5, 150, 105, 0.22);
+}
+.btn-success:hover { background: var(--green-d); box-shadow: 0 4px 16px rgba(5, 150, 105, 0.32); transform: translateY(-1px); }
+
+.btn-danger {
+  background: var(--red);
+  color: var(--text-inv);
+  box-shadow: 0 2px 8px rgba(220, 38, 38, 0.20);
+}
+.btn-danger:hover { background: var(--red-d); box-shadow: 0 4px 16px rgba(220, 38, 38, 0.30); transform: translateY(-1px); }
+
+.btn-outlook {
+  background: #0078d4;
+  color: var(--text-inv);
+  box-shadow: 0 2px 8px rgba(0, 120, 212, 0.22);
+}
+.btn-outlook:hover { background: #006cbf; box-shadow: 0 4px 16px rgba(0, 120, 212, 0.32); transform: translateY(-1px); }
+
+.btn-full { width: 100%; justify-content: center; }
+button:active { transform: translateY(0) !important; }
+
+/* ----------------------------------------------------------------
+   46. SECTION DIVIDER
+   ---------------------------------------------------------------- */
+.section-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 22px 0 18px;
+}
+
+.section-divider-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--brand);
+  flex-shrink: 0;
+  background: var(--brand-l);
+  padding: 4px 10px;
+  border-radius: 99px;
+}
+
+.section-divider-line { flex: 1; height: 1px; background: var(--border); }
+
+/* ----------------------------------------------------------------
+   47. INFO TIP
+   ---------------------------------------------------------------- */
+.info-tip {
+  font-size: 12px;
+  color: var(--text-2);
+  line-height: 1.6;
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 6px;
+}
+
+.info-tip span { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+/* ----------------------------------------------------------------
+   48. CHECKBOXES DE EXCLUSÃO
+   ---------------------------------------------------------------- */
+.delete-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.delete-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--surface-2);
+  border: 1.5px solid var(--border);
+  border-radius: var(--r);
+  padding: 11px 14px;
+  cursor: pointer;
+  transition: var(--t);
+  user-select: none;
+}
+
+.delete-item:hover { background: var(--red-l); border-color: #fca5a5; }
+.delete-item.checked { background: var(--red-l); border-color: var(--red); }
+
+.delete-item input[type="checkbox"] {
+  width: 15px;
+  height: 15px;
+  accent-color: var(--red);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.delete-item span { font-size: 12px; font-weight: 500; color: var(--text-2); }
+.delete-item.checked span { color: var(--red); }
+
+/* ----------------------------------------------------------------
+   49. ENVIO / OUTLOOK
+   ---------------------------------------------------------------- */
+.envio-list {
+  display: none;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 18px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--brand);
+  margin-top: 18px;
+  line-height: 1.9;
+}
+
+.envio-list.visible { display: block; }
+
+.tomo-preview-list { display: none; margin-top: 16px; }
+.tomo-preview-list.visible { display: block; }
+
+.preview-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  overflow: hidden;
+}
+
+.preview-table th {
+  padding: 10px 16px;
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  font-family: var(--mono);
+  font-weight: 500;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  color: var(--text-3);
+  text-transform: uppercase;
+  text-align: left;
+}
+
+.preview-table th:not(:last-child) { border-right: 1px solid var(--border-2); }
+
+.preview-table td {
+  padding: 11px 16px;
+  border-bottom: 1px solid var(--border-2);
+  color: var(--text-1);
+  vertical-align: middle;
+  font-weight: 400;
+}
+
+.preview-table tr:last-child td { border-bottom: none; }
+.preview-table tr:hover td { background: var(--surface-2); }
+.preview-table .col-id { font-family: var(--mono); color: var(--text-3); font-size: 11px; }
+.preview-table .col-tomo { font-family: var(--mono); color: var(--brand); font-weight: 600; }
+
+/* ----------------------------------------------------------------
+   50. MENSAGENS DE STATUS
+   ---------------------------------------------------------------- */
+.msg-status {
+  margin-top: 14px;
+  padding: 13px 18px;
+  border-radius: var(--r);
+  font-size: 13px;
+  font-weight: 500;
+  display: none;
+  line-height: 1.5;
+}
+
+.msg-status.visible { display: block; }
+.msg-ok  { background: var(--green-l); border: 1px solid rgba(5, 150, 105, 0.20); color: var(--green-d); }
+.msg-err { background: var(--red-l);   border: 1px solid rgba(220, 38, 38, 0.20); color: var(--red); }
+
+/* ----------------------------------------------------------------
+   51. MISC — FIELD LABELS EXTRAS
+   ---------------------------------------------------------------- */
+.field-section-label {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-2);
+  letter-spacing: 0.5px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+  text-transform: uppercase;
+}
+
+.field-required::after { content: ' *'; color: var(--red); font-size: 12px; }
+
+/* ----------------------------------------------------------------
+   52. RESPONSIVIDADE
+   ---------------------------------------------------------------- */
+@media (max-width: 1200px) {
+  .kpi-grid { grid-template-columns: repeat(3, 1fr); }
+  .perf-overview { grid-template-columns: 180px 1fr 1fr; }
+}
+
+@media (max-width: 960px) {
+  :root { --sidebar-w: 280px; }
+
+  .dash-grid { grid-template-columns: 1fr; }
+  .vol-sidebar { height: auto; max-height: 360px; }
+
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+
+  .perf-charts { grid-template-columns: 1fr; }
+  .pcard.full  { grid-column: 1; }
+
+  .perf-kpi-grid { grid-template-columns: 1fr 1fr; }
+
+  .container { padding: 18px 16px; }
+  .main-inner { padding: 18px 16px 32px; }
+}
+
+@media (max-width: 720px) {
+  body.layout-central { flex-direction: column; }
+
+  .sidebar {
+    width: 100%;
+    height: auto;
+    max-height: 50vh;
+  }
+
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+  .delete-grid { grid-template-columns: 1fr 1fr; }
+
+  .perf-overview { grid-template-columns: 1fr; }
+  .po-score { border-right: none; border-bottom: 1px solid rgba(255,255,255,.1); padding-right: 0; padding-bottom: 16px; }
+
+  .topbar { padding: 0 16px; }
+  .nav-rail { padding: 0 8px; overflow-x: auto; }
+}
+
+/* ----------------------------------------------------------------
+   53. PRINT
+   ---------------------------------------------------------------- */
+@media print {
+  .topbar, .nav-rail, .perf-filters, .btn-top, .vol-sidebar,
+  .btn-dp-close, .p-pag, .g-toolbar, .stage-nav,
+  .modal-overlay, #modal-overlay, .sidebar { display: none !important; }
+
+  body.layout-central .main { overflow: visible; }
+  .dash-grid { display: block; }
+  body { background: #fff; }
+  #loader, #global-loader { display: none !important; }
+}
+</head>
+<body>
+
+<!-- ═══════════ LOADER ═══════════ -->
+<div id="global-loader">
+  <div class="loader-ring"></div>
+  <p class="loader-txt">Sincronizando dados...</p>
+</div>
+
+<!-- ═══════════ TOAST ═══════════ -->
+<div id="toast"></div>
+
+<!-- ═══════════ MODAL — ADICIONAR VOLUNTÁRIO ═══════════ -->
+<div class="modal-overlay" id="modalAdd">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <i class="fa-solid fa-user-plus" style="color:var(--green);"></i>
+      Adicionar Voluntário
+    </div>
+    <div class="modal-label">Nome completo</div>
+    <input type="text" id="novoVolNome" class="modal-input"
+           placeholder="Ex.: Maria Clara Souza"
+           onkeydown="if(event.key==='Enter') confirmarAdd()">
+    <p style="font-size:11px;color:var(--text-3);margin-top:8px;">
+      <i class="fa-solid fa-circle-info"></i>
+      O voluntário será adicionado como <strong>Ativo</strong> imediatamente.
+    </p>
+    <div class="modal-btns">
+      <button class="gbtn gbtn-default" onclick="fecharModalAdd()">
+        <i class="fa-solid fa-xmark"></i> Cancelar
+      </button>
+      <button class="gbtn gbtn-success" onclick="confirmarAdd()">
+        <i class="fa-solid fa-check"></i> Adicionar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ MODAL — CONFIRMAR EXCLUSÃO ═══════════ -->
+<div class="modal-overlay" id="modalDel">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <i class="fa-solid fa-triangle-exclamation" style="color:var(--red);"></i>
+      Confirmar Exclusão
+    </div>
+    <p class="modal-confirm-msg">
+      Você está prestes a remover o voluntário:
+    </p>
+    <div class="modal-confirm-name" id="delNomeExibir">—</div>
+    <p style="font-size:12px;color:var(--text-3);line-height:1.6;">
+      <i class="fa-solid fa-circle-info"></i>
+      Os dados históricos na planilha <strong>não serão apagados</strong>.
+      Apenas o cadastro no painel será removido.
+    </p>
+    <div class="modal-btns">
+      <button class="gbtn gbtn-default" onclick="fecharModalDel()">
+        <i class="fa-solid fa-xmark"></i> Cancelar
+      </button>
+      <button class="gbtn gbtn-danger" id="btnConfirmarDel" onclick="executarRemocao()">
+        <i class="fa-solid fa-trash"></i> Remover
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════ TOPBAR ═══════════ -->
+<header class="topbar">
+  <div class="topbar-brand">
+    <div class="brand-mark"><i class="fa-solid fa-chart-pie"></i></div>
+    <div class="brand-text-wrap">
+      <div class="brand-name">Analytics Dashboard</div>
+      <div class="brand-sub">Sistema de Controle de Dados — v5.0</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <span class="badge-live"><span class="live-dot"></span> Live</span>
+    <div class="ctrl-capsule">
+      <i class="fa-regular fa-calendar-days"></i>
+      <select id="anoSelect"></select>
+    </div>
+    <button class="btn-top" onclick="window.print()">
+      <i class="fa-solid fa-print"></i> Imprimir
+    </button>
+  </div>
+</header>
+
+<!-- ═══════════ NAV ═══════════ -->
+<nav class="nav-rail">
+  <button class="nav-btn active" id="tab-dashboard" onclick="mudarAba('dashboard')">
+    <i class="fa-solid fa-chart-pie"></i> Dashboard
+  </button>
+  <button class="nav-btn" id="tab-performance" onclick="mudarAba('performance')">
+    <i class="fa-solid fa-gauge-high"></i> Análise de Performance
+  </button>
+  <button class="nav-btn" id="tab-gestao" onclick="mudarAba('gestao')">
+    <i class="fa-solid fa-users-gear"></i> Gestão de Voluntários
+  </button>
+</nav>
+
+
+<!-- ══════════════════════════════════════════════
+     PAINEL: DASHBOARD
+══════════════════════════════════════════════ -->
+<div id="panel-dashboard" class="panel active">
+  <div class="container">
+    <div class="stage-strip" id="stageStrip"></div>
+    <div class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-accent" style="background:var(--blue);"></div>
+        <i class="fa-solid fa-books kpi-icon-bg"></i>
+        <div class="kpi-lbl">Total de Tomos</div>
+        <div class="kpi-val" id="totalTomos">—</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-accent" style="background:var(--green);"></div>
+        <i class="fa-solid fa-calendar-check kpi-icon-bg"></i>
+        <div class="kpi-lbl">Volume (Últimos 3 Meses)</div>
+        <div class="kpi-val" id="totalTrimestre">—</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-accent" style="background:var(--amber);"></div>
+        <i class="fa-solid fa-user-check kpi-icon-bg"></i>
+        <div class="kpi-lbl">Voluntários Ativos</div>
+        <div class="kpi-val" id="totalVolAtivos">—</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-accent" style="background:var(--text-4);"></div>
+        <i class="fa-solid fa-user-slash kpi-icon-bg"></i>
+        <div class="kpi-lbl">Voluntários Inativos</div>
+        <div class="kpi-val" id="totalVolInativos">—</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-accent" style="background:var(--indigo);"></div>
+        <i class="fa-solid fa-users kpi-icon-bg"></i>
+        <div class="kpi-lbl">Total Voluntários</div>
+        <div class="kpi-val" id="totalVoluntarios">—</div>
+      </div>
+    </div>
+    <div class="info-bar" id="infoBar"></div>
+    <div class="dash-grid">
+      <!-- Sidebar de voluntários -->
+      <div class="vol-sidebar">
+        <div class="vs-head">
+          <h4><i class="fa-solid fa-users"></i> Equipe de Voluntários</h4>
+          <input type="text" id="buscaVol" class="vs-search" placeholder="Buscar voluntário..." oninput="filtrarListaVol()">
+        </div>
+        <div class="vs-list" id="listaVol"></div>
+      </div>
+      <!-- Charts -->
+      <div class="charts-stack">
+        <div class="details-panel" id="boxDetalhes">
+          <button class="btn-dp-close" onclick="fecharDetalhes()">&times;</button>
+          <div class="dp-title" id="dpTitle"><i class="fa-solid fa-clipboard-user"></i> Detalhes</div>
+          <div id="dpContent"></div>
+        </div>
+        <div class="filter-row">
+          <i class="fa-solid fa-sliders" style="color:var(--text-3);font-size:12px;"></i>
+          <span class="fr-label">Filtro de Gráficos</span>
+          <div style="width:1px;height:18px;background:var(--border);"></div>
+          <div class="toggle-wrap">
+            <label class="toggle">
+              <input type="checkbox" id="toggleAtivos" onchange="aplicarFiltro()">
+              <div class="t-track"></div>
+              <div class="t-thumb"></div>
+            </label>
+            <span class="toggle-lbl">Exibir apenas <strong>ativos</strong> no gráfico de esforço</span>
+          </div>
+          <div style="margin-left:auto;font-size:11px;color:var(--text-3);">
+            <i class="fa-solid fa-circle-info"></i> Demais gráficos: histórico completo
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><i class="fa-solid fa-chart-column"></i> Produtividade Mensal por Etapa</div>
+          <div class="chart-box"><canvas id="graficoMeses"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-hd"><i class="fa-solid fa-layer-group"></i> Volume Global por Etapa</div>
+          <div class="chart-box md"><canvas id="graficoEtapas"></canvas></div>
+        </div>
+        <div class="card">
+          <div class="card-hd" id="hdRosca"><i class="fa-solid fa-chart-pie"></i> Distribuição de Esforço por Voluntário</div>
+          <div class="donut-box"><canvas id="graficoVol"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAINEL: PERFORMANCE
+══════════════════════════════════════════════ -->
+<div id="panel-performance" class="panel">
+  <div class="container">
+
+    <!-- Painel de Média Geral Adaptativa (preenchido dinamicamente) -->
+    <div id="perfOverviewWrap"></div>
+
+    <!-- Histórico mensal por etapa (preenchido dinamicamente) -->
+    <div id="perfHistWrap"></div>
+
+    <!-- Tabs de etapa -->
+    <div class="stage-nav">
+      <button class="stage-tab active" id="stab-DESM" onclick="mudarEtapa('DESM')">
+        <span class="s-dot" style="background:#64748b;"></span>
+        <i class="fa-solid fa-box-open"></i> Desmembramento
+        <span class="s-badge" id="sbadge-DESM">—</span>
+      </button>
+      <button class="stage-tab" id="stab-ETIQ" onclick="mudarEtapa('ETIQ')">
+        <span class="s-dot" style="background:#d97706;"></span>
+        <i class="fa-solid fa-tags"></i> Etiquetamento
+        <span class="s-badge" id="sbadge-ETIQ">—</span>
+      </button>
+      <button class="stage-tab" id="stab-DIG" onclick="mudarEtapa('DIG')">
+        <span class="s-dot" style="background:#1847c2;"></span>
+        <i class="fa-solid fa-laptop-code"></i> Digitalização
+        <span class="s-badge" id="sbadge-DIG">—</span>
+      </button>
+      <button class="stage-tab" id="stab-CLA" onclick="mudarEtapa('CLA')">
+        <span class="s-dot" style="background:#0a9e6e;"></span>
+        <i class="fa-solid fa-folder-tree"></i> Classificação
+        <span class="s-badge" id="sbadge-CLA">—</span>
+      </button>
+    </div>
+    <div id="perfContent">
+      <div class="empty-stage">
+        <i class="fa-solid fa-spinner fa-spin"></i>
+        <p>Carregando análise de performance...</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     PAINEL: GESTÃO DE VOLUNTÁRIOS
+══════════════════════════════════════════════ -->
+<div id="panel-gestao" class="panel">
+  <div class="container gestao-wrap">
+    <!-- Estatísticas rápidas -->
+    <div class="g-stats" id="gStats">
+      <div class="g-stat"><span class="g-dot all"></span> Total: <b id="g-total">0</b></div>
+      <div class="g-stat"><span class="g-dot active"></span> Ativos: <b id="g-ativos">0</b></div>
+      <div class="g-stat"><span class="g-dot inact"></span> Inativos: <b id="g-inativos">0</b></div>
+    </div>
+
+    <!-- Toolbar com Add/Remove -->
+    <div class="g-toolbar">
+      <input type="text" id="buscaGestao" placeholder="🔍  Buscar voluntário..." onkeyup="filtrarTblGestao()">
+      <select id="filtroStGestao" onchange="filtrarTblGestao()">
+        <option value="todos">Todos</option>
+        <option value="ativo">Somente ativos</option>
+        <option value="inativo">Somente inativos</option>
+      </select>
+      <button class="gbtn gbtn-add" onclick="abrirModalAdd()">
+        <i class="fa-solid fa-user-plus"></i> Adicionar Voluntário
+      </button>
+      <button class="gbtn gbtn-primary"  onclick="marcarTodos('ativo')"><i class="fa-solid fa-circle-check"></i> Marcar todos Ativo</button>
+      <button class="gbtn gbtn-danger"   onclick="marcarTodos('inativo')"><i class="fa-solid fa-circle-xmark"></i> Marcar todos Inativo</button>
+      <button class="gbtn gbtn-success"  onclick="salvarStatus()"><i class="fa-solid fa-floppy-disk"></i> Salvar Alterações</button>
+    </div>
+
+    <div class="g-tbl-wrap">
+      <table class="g-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Nome</th>
+            <th>Origem</th>
+            <th>Interações</th>
+            <th>Status</th>
+            <th>Ação</th>
+          </tr>
+        </thead>
+        <tbody id="tblGestao">
+          <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-3);">
+            <i class="fa-solid fa-spinner fa-spin"></i> Carregando...
+          </td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="g-note">
+      <i class="fa-solid fa-circle-info" style="color:var(--blue);"></i>
+      Alterar status <strong>não apaga</strong> dados históricos. ·
+      <span style="color:var(--violet);">Roxo = adicionado manualmente</span> ·
+      <span style="color:var(--blue);">Azul = detectado na planilha</span>
+    </p>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════════
+     JAVASCRIPT
+══════════════════════════════════════════════ -->
+<script>
+'use strict';
+
+/* ── Chart.js defaults ─────────────────────────────── */
+Chart.defaults.font.family = "'Plus Jakarta Sans', system-ui, sans-serif";
+Chart.defaults.color = '#7385a8';
+Chart.defaults.plugins.tooltip.backgroundColor = '#0d1526';
+Chart.defaults.plugins.tooltip.padding = 12;
+Chart.defaults.plugins.tooltip.cornerRadius = 9;
+Chart.defaults.plugins.tooltip.titleFont = { weight:'800', size:12 };
+Chart.defaults.plugins.tooltip.bodyFont  = { size:12 };
+Chart.defaults.plugins.legend.labels.usePointStyle = true;
+Chart.defaults.plugins.legend.labels.padding = 16;
+
+/* ── Estado global ─────────────────────────────────── */
+let gcEtapas, gcVol, gcMeses, gcHistPerf;
+let anoSelecionado = null;
+let dadosCache = null;
+let dadosPerfCache = null;
+let statusVol = {};
+let voluntariosAdicionados = []; // lista dos adicionados manualmente
+let perfCarregando = false;
+const perfCharts = {};
+let perfEtapaAtiva = 'DESM';
+const PERF_PAGE = 25;
+const perfPags = { DESM:1, ETIQ:1, DIG:1, CLA:1 };
+const perfRows = { DESM:[], ETIQ:[], DIG:[], CLA:[] };
+let debounceTimer = null;
+let nomeParaRemover = null;
+
+/* ── Configuração de etapas ────────────────────────── */
+const ETAPAS = {
+  DESM: { nome:'Desmembramento', cor:'#64748b', corL:'#f1f5f9', icon:'fa-box-open',   limiar:{ OTIMO:40,  BOM:90,  REGULAR:150 } },
+  ETIQ: { nome:'Etiquetamento',  cor:'#d97706', corL:'#fef3e2', icon:'fa-tags',        limiar:{ OTIMO:10,  BOM:15,  REGULAR:20  } },
+  DIG:  { nome:'Digitalização',  cor:'#1847c2', corL:'#e4ecff', icon:'fa-laptop-code', limiar:{ OTIMO:60,  BOM:120, REGULAR:200 } },
+  CLA:  { nome:'Classificação',  cor:'#0a9e6e', corL:'#e0f5ed', icon:'fa-folder-tree', limiar:{ OTIMO:30,  BOM:70,  REGULAR:120 } }
+};
+const VOL_FAIXAS = { PEQUENO:25, MEDIO:75, GRANDE:200 };
+
+/* ════════════════════════════════════════════════════
+   UI HELPERS
+════════════════════════════════════════════════════ */
+function loader(vis) {
+  const el = document.getElementById('global-loader');
+  if (vis) { el.classList.remove('hide'); el.style.display='flex'; }
+  else { el.classList.add('hide'); setTimeout(()=>{ el.style.display='none'; }, 400); }
+}
+
+function toast(msg, tipo='info') {
+  const t = document.getElementById('toast');
+  const ic = { success:'circle-check', error:'circle-xmark', info:'circle-info' };
+  t.className = 'vis ' + tipo;
+  t.innerHTML = `<i class="fa-solid fa-${ic[tipo]||'circle-info'}"></i> ${msg}`;
+  clearTimeout(t._t);
+  t._t = setTimeout(()=>{ t.className=''; }, 3500);
+}
+
+/* ════════════════════════════════════════════════════
+   MODAIS — VOLUNTÁRIOS
+════════════════════════════════════════════════════ */
+function abrirModalAdd() {
+  document.getElementById('novoVolNome').value = '';
+  document.getElementById('modalAdd').classList.add('open');
+  setTimeout(()=>document.getElementById('novoVolNome').focus(), 150);
+}
+function fecharModalAdd() {
+  document.getElementById('modalAdd').classList.remove('open');
+}
+
+function confirmarAdd() {
+  const nome = document.getElementById('novoVolNome').value.trim();
+  if (!nome) { toast('Informe o nome do voluntário.', 'error'); return; }
+  fecharModalAdd();
+  loader(true);
+
+  google.script.run
+    .withSuccessHandler(res => {
+      loader(false);
+      if (res.ok) {
+        toast(res.msg, 'success');
+        // Recarrega dados e voluntários
+        voluntariosAdicionados.push(nome);
+        statusVol[nome] = 'ativo';
+        carregarDados();
+        if (document.getElementById('panel-gestao').classList.contains('active')) renderGestao();
+      } else {
+        toast(res.msg, 'error');
+      }
+    })
+    .withFailureHandler(e => { loader(false); toast('Erro: ' + (e.message||e), 'error'); })
+    .adicionarVoluntario(nome);
+}
+
+function abrirModalDel(nome) {
+  nomeParaRemover = nome;
+  document.getElementById('delNomeExibir').textContent = nome;
+  document.getElementById('modalDel').classList.add('open');
+}
+function fecharModalDel() {
+  document.getElementById('modalDel').classList.remove('open');
+  nomeParaRemover = null;
+}
+
+function executarRemocao() {
+  if (!nomeParaRemover) return;
+  const nome = nomeParaRemover;
+  fecharModalDel();
+  loader(true);
+
+  google.script.run
+    .withSuccessHandler(res => {
+      loader(false);
+      if (res.ok) {
+        toast(res.msg, 'success');
+        delete statusVol[nome];
+        voluntariosAdicionados = voluntariosAdicionados.filter(n => n !== nome);
+        dadosPerfCache = null;
+        destruirChartsPerf();
+        carregarDados();
+        if (document.getElementById('panel-gestao').classList.contains('active')) renderGestao();
+      } else {
+        toast(res.msg, 'error');
+      }
+    })
+    .withFailureHandler(e => { loader(false); toast('Erro: ' + (e.message||e), 'error'); })
+    .removerVoluntario(nome);
+}
+
+/* Fechar modais ao clicar fora */
+document.getElementById('modalAdd').addEventListener('click', function(e){ if(e.target===this) fecharModalAdd(); });
+document.getElementById('modalDel').addEventListener('click', function(e){ if(e.target===this) fecharModalDel(); });
+
+/* ════════════════════════════════════════════════════
+   NAVEGAÇÃO
+════════════════════════════════════════════════════ */
+function mudarAba(aba) {
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('tab-'+aba).classList.add('active');
+  document.getElementById('panel-'+aba).classList.add('active');
+  if (aba === 'gestao' && dadosCache) renderGestao();
+  if (aba === 'performance') {
+    if (dadosPerfCache) renderEtapaAtiva();
+    else if (!perfCarregando) carregarPerf();
+  }
+}
+
+function mudarEtapa(cod) {
+  perfEtapaAtiva = cod;
+  document.querySelectorAll('.stage-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('stab-'+cod).classList.add('active');
+  if (dadosPerfCache) renderEtapaAtiva();
+}
+
+/* ════════════════════════════════════════════════════
+   INIT
+════════════════════════════════════════════════════ */
+function init() {
+  loader(true);
+  // Carrega status de voluntários e lista adicionados em paralelo
+  let statusOk = false, addOk = false;
+
+  function tentarCarregarAnos() {
+    if (!statusOk || !addOk) return;
+    google.script.run
+      .withSuccessHandler(anos => {
+        const sel = document.getElementById('anoSelect');
+        sel.innerHTML = '';
+        anos.forEach(a => {
+          const o = document.createElement('option');
+          o.value=a; o.text=a; sel.appendChild(o);
+        });
+        anoSelecionado = anos[anos.length-1];
+        sel.value = anoSelecionado;
+        sel.onchange = function() {
+          anoSelecionado = +this.value;
+          fecharDetalhes();
+          dadosPerfCache = null;
+          destruirChartsPerf();
+          document.getElementById('perfOverviewWrap').innerHTML = '';
+          document.getElementById('perfHistWrap').innerHTML = '';
+          Object.keys(perfPags).forEach(k=>perfPags[k]=1);
+          carregarDados();
+        };
+        carregarDados();
+      })
+      .withFailureHandler(e=>{ loader(false); toast('Erro anos: '+(e.message||e),'error'); })
+      .getAnosDisponiveis();
+  }
+
+  google.script.run
+    .withSuccessHandler(st => { statusVol = st || {}; statusOk=true; tentarCarregarAnos(); })
+    .withFailureHandler(e  => { loader(false); toast('Erro status: '+(e.message||e),'error'); })
+    .getStatusVoluntarios();
+
+  google.script.run
+    .withSuccessHandler(lista => { voluntariosAdicionados = lista || []; addOk=true; tentarCarregarAnos(); })
+    .withFailureHandler(() => { voluntariosAdicionados=[]; addOk=true; tentarCarregarAnos(); })
+    .getVoluntariosAdicionados();
+}
+
+/* ════════════════════════════════════════════════════
+   CARGA — DASHBOARD
+════════════════════════════════════════════════════ */
+function carregarDados() {
+  loader(true);
+  const ativos = Object.keys(statusVol).filter(n=>statusVol[n]==='ativo');
+  google.script.run
+    .withSuccessHandler(res => { dadosCache=res; renderDash(res); loader(false); })
+    .withFailureHandler(e  => { loader(false); toast('Erro dashboard: '+(e.message||e),'error'); })
+    .getDadosCompletos(anoSelecionado, ativos);
+}
+
+/* ════════════════════════════════════════════════════
+   CARGA — PERFORMANCE
+════════════════════════════════════════════════════ */
+function carregarPerf() {
+  if (perfCarregando) return;
+  perfCarregando = true;
+
+  document.getElementById('perfContent').innerHTML = `
+    <div class="empty-stage">
+      <div class="loader-ring" style="margin:0 auto;width:36px;height:36px;border-top-color:var(--blue);"></div>
+      <p style="margin-top:16px;">Processando análise completa de performance...</p>
+      <small>Lendo 100% dos registros — cada etapa é analisada independentemente.</small>
+    </div>`;
+
+  const tOut = setTimeout(()=>{
+    if (!perfCarregando) return;
+    perfCarregando = false;
+    document.getElementById('perfContent').innerHTML = `
+      <div class="empty-stage">
+        <i class="fa-solid fa-circle-exclamation" style="color:var(--red);opacity:1;font-size:36px;"></i>
+        <p>Tempo limite excedido. Clique novamente na aba para tentar.</p>
+      </div>`;
+    toast('Timeout ao carregar performance.','error');
+  }, 55000);
+
+  google.script.run
+    .withSuccessHandler(res => {
+      clearTimeout(tOut);
+      perfCarregando = false;
+      if (!res || !res.etapas) {
+        document.getElementById('perfContent').innerHTML = `
+          <div class="empty-stage">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <p>Nenhum dado de performance para ${anoSelecionado}.</p>
+          </div>`;
+        return;
+      }
+      dadosPerfCache = res;
+      // Atualiza badges
+      Object.keys(ETAPAS).forEach(cod => {
+        const et = res.etapas[cod];
+        const qtd = (et && et.stats) ? et.stats.quantidade : 0;
+        const b = document.getElementById('sbadge-'+cod);
+        if (b) b.textContent = qtd + ' reg.';
+      });
+      renderPerfOverview(res);
+      renderPerfHist(res);
+      renderEtapaAtiva();
+    })
+    .withFailureHandler(e => {
+      clearTimeout(tOut);
+      perfCarregando = false;
+      document.getElementById('perfContent').innerHTML = `
+        <div class="empty-stage">
+          <i class="fa-solid fa-circle-exclamation" style="color:var(--red);opacity:1;"></i>
+          <p>Erro: ${e.message||e}</p>
+        </div>`;
+      toast('Erro performance: '+(e.message||e),'error');
+    })
+    .getDadosPerformance(anoSelecionado);
+}
+
+/* ════════════════════════════════════════════════════
+   RENDER — PAINEL MÉDIA GERAL ADAPTATIVA
+════════════════════════════════════════════════════ */
+function renderPerfOverview(res) {
+  const ma = res.mediaAdaptativa;
+  if (!ma) return;
+
+  const clsScore = ma.mediaGeral>=80?'#34d399':ma.mediaGeral>=65?'#60a5fa':ma.mediaGeral>=45?'#fbbf24':'#f87171';
+  const gargalo  = ma.gargalos && ma.gargalos.length > 0 ? ma.gargalos[0] : null;
+  const melhor   = ma.melhorEtapa;
+
+  // Gargalo HTML
+  const gargaloHTML = gargalo
+    ? `<div class="po-gargalo">
+         <div class="po-item-lbl">⚠ Gargalo Principal</div>
+         <div class="po-item-val" style="font-size:15px;">${ETAPAS[gargalo.etapa]?.nome || gargalo.etapa}</div>
+         <div class="po-item-sub">${gargalo.motivo} · Score ${gargalo.score.toFixed(1)}</div>
+       </div>`
+    : `<div class="po-melhor">
+         <div class="po-item-lbl">✓ Sem Gargalos</div>
+         <div class="po-item-val" style="font-size:14px;color:#34d399;">Tudo OK</div>
+         <div class="po-item-sub">Performance dentro dos limites</div>
+       </div>`;
+
+  const melhorHTML = melhor && melhor.nome !== '—'
+    ? `<div class="po-melhor">
+         <div class="po-item-lbl">⭐ Melhor Etapa</div>
+         <div class="po-item-val" style="font-size:15px;">${ETAPAS[melhor.nome]?.nome || melhor.nome}</div>
+         <div class="po-item-sub">Score ${melhor.score.toFixed(1)} / 100</div>
+       </div>` : '';
+
+  document.getElementById('perfOverviewWrap').innerHTML = `
+    <div class="perf-overview">
+      <div class="po-score">
+        <div class="po-score-val" style="background:linear-gradient(135deg,${clsScore},#60a5fa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">
+          ${ma.mediaGeral.toFixed(0)}
+        </div>
+        <div class="po-score-lbl">Score Geral</div>
+        <div class="po-class">${ma.classificacao}</div>
+      </div>
+      <div class="po-item">
+        ${gargaloHTML}
+      </div>
+      <div class="po-item">
+        ${melhorHTML}
+      </div>
+      <div class="po-item" style="display:flex;flex-direction:column;gap:8px;">
+        ${Object.keys(ETAPAS).map(cod=>{
+          const det = ma.detalhes && ma.detalhes[cod];
+          if (!det) return '';
+          const s = det.score;
+          const barClr = s>=80?'#34d399':s>=65?'#60a5fa':s>=45?'#fbbf24':'#f87171';
+          return `<div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:10px;font-weight:800;color:rgba(255,255,255,.5);width:35px;flex-shrink:0;">${cod}</span>
+            <div style="flex:1;height:5px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden;">
+              <div style="width:${s}%;height:100%;background:${barClr};border-radius:3px;"></div>
+            </div>
+            <span style="font-size:11px;font-weight:800;color:${barClr};width:35px;text-align:right;">${s.toFixed(0)}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+}
+
+/* ════════════════════════════════════════════════════
+   RENDER — HISTÓRICO MENSAL DE PERFORMANCE (tendência)
+════════════════════════════════════════════════════ */
+function renderPerfHist(res) {
+  // Gera dados: para cada etapa, mostra índice de performance
+  const meses = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const wrap = document.getElementById('perfHistWrap');
+  if (!wrap) return;
+
+  wrap.innerHTML = `
+    <div class="hist-card" style="margin-bottom:20px;">
+      <div class="hist-hd">
+        <div class="hist-hd-title">
+          <i class="fa-solid fa-chart-line"></i>
+          Evolução de Produção — ${anoSelecionado}
+        </div>
+        <div style="font-size:11px;color:var(--text-3);">Baseado na produção mensal de cada etapa</div>
+      </div>
+      <div class="hist-chart">
+        <canvas id="gcHistPerf"></canvas>
+      </div>
+    </div>`;
+
+  if (gcHistPerf) { try { gcHistPerf.destroy(); } catch(e){} }
+  if (!dadosCache || !dadosCache.producaoMes) return;
+
+  const pm = dadosCache.producaoMes;
+  const cores = { DESM:'#64748b', ETIQ:'#d97706', DIG:'#1847c2', CLA:'#0a9e6e' };
+  const nomes = { DESM:'Desmembramento', ETIQ:'Etiquetamento', DIG:'Digitalização', CLA:'Classificação' };
+
+  gcHistPerf = new Chart(document.getElementById('gcHistPerf'), {
+    type: 'line',
+    data: {
+      labels: meses,
+      datasets: Object.keys(ETAPAS).map(cod => ({
+        label: nomes[cod],
+        data: pm.dados[cod] || Array(12).fill(0),
+        borderColor: cores[cod],
+        backgroundColor: cores[cod] + '20',
+        fill: false,
+        tension: .35,
+        pointRadius: 4,
+        pointHoverRadius: 7,
+        borderWidth: 2.5
+      }))
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      interaction: { mode:'index', intersect:false },
+      plugins: { legend: { position:'top', labels:{ boxWidth:10, padding:16, font:{size:11.5} } } },
+      scales: {
+        y: { beginAtZero:true, border:{dash:[5,5]}, grid:{color:'#dde3ef'}, title:{display:true,text:'Laudos'} },
+        x: { grid:{display:false} }
+      }
+    }
+  });
+}
+
+/* ════════════════════════════════════════════════════
+   RENDER — ETAPA ATIVA
+════════════════════════════════════════════════════ */
+function renderEtapaAtiva() {
+  const cod = perfEtapaAtiva;
+  const cfg = ETAPAS[cod];
+  const et  = dadosPerfCache.etapas[cod];
+  const cont = document.getElementById('perfContent');
+
+  if (!et || et.stats.quantidade === 0) {
+    cont.innerHTML = `
+      <div class="empty-stage">
+        <i class="fa-solid ${cfg.icon}" style="color:${cfg.cor};opacity:.3;"></i>
+        <p>Nenhum registro de <strong>${cfg.nome}</strong> em ${anoSelecionado}.</p>
+        <small>Verifique se há datas preenchidas na coluna correspondente.</small>
+      </div>`;
+    return;
+  }
+
+  calcRows(cod);
+  cont.innerHTML = buildEtapaHTML(cod, cfg, et);
+  renderChartsEtapa(cod, cfg, et);
+  renderTbl(cod);
+}
+
+/* ════════════════════════════════════════════════════
+   BUILD HTML DE ETAPA
+════════════════════════════════════════════════════ */
+function buildEtapaHTML(cod, cfg, et) {
+  const k   = et.kpis;
+  const d   = et.distribuicao;
+  const f   = et.faixas;
+  const lim = cfg.limiar;
+  const idx = k.indicePerformance;
+  const idxCls = idx>=80?'g':idx>=60?'c':idx>=40?'a':'r';
+  const idxLbl = idx>=80?'Excelente':idx>=60?'Bom':idx>=40?'Regular':'Atenção';
+
+  const diag = et.diagnostico || {};
+  const diagTxt = diag.processados !== undefined
+    ? `${diag.processados}/${diag.total} processados · ${diag.semTempo||0} sem tempo`
+    : '';
+
+  return `
+  <!-- Banner -->
+  <div class="stage-banner" style="background:${cfg.corL};border-color:${cfg.cor}33;color:${cfg.cor};">
+    <i class="fa-solid fa-shield-check"></i>
+    <span>Análise exclusiva de <strong>${cfg.nome}</strong> — todos os dados referem-se <u>somente</u> a esta etapa.</span>
+    ${diagTxt ? `<span style="margin-left:auto;font-size:10.5px;opacity:.75;">${diagTxt}</span>` : ''}
+  </div>
+
+  <!-- Limiares específicos da etapa -->
+  <div class="limiar-bar">
+    <span class="lb-title">Limiares — ${cfg.nome}:</span>
+    <span class="lchip lc-o"><i class="fa-solid fa-rocket"></i> Ótimo ≤ ${lim.OTIMO} min</span>
+    <span class="lchip lc-b"><i class="fa-solid fa-thumbs-up"></i> Bom ≤ ${lim.BOM} min</span>
+    <span class="lchip lc-r"><i class="fa-solid fa-minus"></i> Regular ≤ ${lim.REGULAR} min</span>
+    <span class="lchip lc-l"><i class="fa-solid fa-triangle-exclamation"></i> Lento &gt; ${lim.REGULAR} min</span>
+    <span style="margin-left:12px;font-size:10.5px;color:var(--text-3);">| Volume: Peq.≤${VOL_FAIXAS.PEQUENO} · Méd.≤${VOL_FAIXAS.MEDIO} · Grd.≤${VOL_FAIXAS.GRANDE} · M.Grd.=500+</span>
+  </div>
+
+  <!-- Filtros -->
+  <div class="perf-filters">
+    <i class="fa-solid fa-sliders" style="color:var(--text-3);align-self:center;"></i>
+    <div class="pf-grp">
+      <label>Faixa de Volume</label>
+      <select id="ff_${cod}" class="pf-sel" onchange="filtrarEt('${cod}')">
+        <option value="todos">Todas as Faixas</option>
+        <option value="pequeno">Pequeno (1–${VOL_FAIXAS.PEQUENO} docs)</option>
+        <option value="medio">Médio (${VOL_FAIXAS.PEQUENO+1}–${VOL_FAIXAS.MEDIO} docs)</option>
+        <option value="grande">Grande (${VOL_FAIXAS.MEDIO+1}–${VOL_FAIXAS.GRANDE} docs)</option>
+        <option value="muito_grande">Muito Grande (${VOL_FAIXAS.GRANDE+1}+ docs)</option>
+      </select>
+    </div>
+    <div class="pf-grp">
+      <label>Eficiência</label>
+      <select id="fe_${cod}" class="pf-sel" onchange="filtrarEt('${cod}')">
+        <option value="todos">Todas</option>
+        <option value="otimo">Ótimo (≤ ${lim.OTIMO} min)</option>
+        <option value="bom">Bom (≤ ${lim.BOM} min)</option>
+        <option value="regular">Regular (≤ ${lim.REGULAR} min)</option>
+        <option value="lento">Lento (&gt; ${lim.REGULAR} min)</option>
+      </select>
+    </div>
+    <div class="pf-grp">
+      <label>Buscar Laudo / ID</label>
+      <input type="text" id="fb_${cod}" class="pf-inp" placeholder="ID do tomo..." oninput="debounceFilter('${cod}')">
+    </div>
+    <button class="pfbtn pfbtn-ghost" onclick="limparFiltros('${cod}')">
+      <i class="fa-solid fa-xmark"></i> Limpar
+    </button>
+    <button class="pfbtn pfbtn-primary" onclick="exportCSV('${cod}')">
+      <i class="fa-solid fa-file-csv"></i> Exportar CSV
+    </button>
+  </div>
+
+  <!-- KPIs -->
+  <div class="perf-kpi-grid">
+    <div class="pkpi">
+      <div class="pk-lbl">Registros Processados</div>
+      <div class="pk-val">${k.totalRegistros.toLocaleString('pt-BR')}</div>
+      <div class="pk-sub">laudos de ${cfg.nome}</div>
+    </div>
+    <div class="pkpi c">
+      <div class="pk-lbl">Total de Documentos</div>
+      <div class="pk-val">${k.totalDocs.toLocaleString('pt-BR')}</div>
+      <div class="pk-sub">docs processados na etapa</div>
+    </div>
+    <div class="pkpi">
+      <div class="pk-lbl">Docs Médio / Laudo</div>
+      <div class="pk-val">${k.volumeMedio.toFixed(1)}</div>
+      <div class="pk-sub">documentos por operação</div>
+    </div>
+    <div class="pkpi g">
+      <div class="pk-lbl">Tempo Médio / Laudo</div>
+      <div class="pk-val">${k.tempoMedio.toFixed(1)} min</div>
+      <div class="pk-sub">duração média real</div>
+    </div>
+    <div class="pkpi a">
+      <div class="pk-lbl">Menor Tempo</div>
+      <div class="pk-val">${k.tempoMin.toFixed(1)} min</div>
+      <div class="pk-sub">registro mais rápido</div>
+    </div>
+    <div class="pkpi a">
+      <div class="pk-lbl">Maior Tempo</div>
+      <div class="pk-val">${k.tempoMax.toFixed(1)} min</div>
+      <div class="pk-sub">registro mais lento</div>
+    </div>
+    <div class="pkpi g">
+      <div class="pk-lbl">Mais Rápido</div>
+      <div class="pk-val" style="font-size:15px;">${k.maisRapido.id}</div>
+      <div class="pk-sub">${k.maisRapido.tempo.toFixed(1)} min total</div>
+    </div>
+    <div class="pkpi r">
+      <div class="pk-lbl">Mais Demorado</div>
+      <div class="pk-val" style="font-size:15px;">${k.maisDemorado.id}</div>
+      <div class="pk-sub">${k.maisDemorado.tempo.toFixed(1)} min total</div>
+    </div>
+    <div class="pkpi ${idxCls}">
+      <div class="pk-lbl">Índice de Performance</div>
+      <div class="pk-val">${idx.toFixed(1)}%</div>
+      <div class="pk-sub">${idxLbl} — ótimo+bom</div>
+    </div>
+  </div>
+
+  <!-- Gráficos: distribuição + volume -->
+  <div class="perf-charts" style="margin-bottom:16px;">
+    <div class="pcard">
+      <div class="pcard-title" style="color:${cfg.cor};">
+        <i class="fa-solid fa-chart-pie"></i> Distribuição de Eficiência — ${cfg.nome}
+      </div>
+      <div class="pc-wrap"><canvas id="pc_dist_${cod}"></canvas></div>
+    </div>
+    <div class="pcard">
+      <div class="pcard-title">
+        <i class="fa-solid fa-layer-group" style="color:${cfg.cor};"></i>
+        Faixa de Volume — ${cfg.nome}
+      </div>
+      <div class="pc-wrap"><canvas id="pc_faixas_${cod}"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Scatter -->
+  <div class="perf-charts" style="margin-bottom:16px;">
+    <div class="pcard full">
+      <div class="pcard-title">
+        <i class="fa-solid fa-circle-dot" style="color:var(--green);"></i>
+        Volume × Tempo — Dispersão Interna de ${cfg.nome}
+      </div>
+      <div class="pc-wrap xtall"><canvas id="pc_scatter_${cod}"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Ranking + Desvio -->
+  <div class="perf-charts" style="margin-bottom:20px;">
+    <div class="pcard">
+      <div class="pcard-title">
+        <i class="fa-solid fa-ranking-star" style="color:var(--indigo);"></i>
+        Top 10 Mais Eficientes — ${cfg.nome}
+      </div>
+      <div class="pc-wrap tall"><canvas id="pc_rank_${cod}"></canvas></div>
+    </div>
+    <div class="pcard">
+      <div class="pcard-title">
+        <i class="fa-solid fa-gauge" style="color:var(--cyan);"></i>
+        Distribuição de Tempo (Estatística)
+      </div>
+      <div class="pc-wrap tall"><canvas id="pc_desvio_${cod}"></canvas></div>
+    </div>
+  </div>
+
+  <!-- Alertas -->
+  <div class="alerts-card">
+    <div class="alerts-hd">
+      <i class="fa-solid fa-bell"></i> Alertas — ${cfg.nome}
+      <span class="ac-badge" id="acBadge_${cod}"></span>
+    </div>
+    <div class="alerts-list" id="acList_${cod}"></div>
+  </div>
+
+  <!-- Tabela analítica -->
+  <div class="perf-tbl-card">
+    <div class="ptc-hd">
+      <div class="ptc-hd-title">
+        <i class="fa-solid fa-table"></i> Tabela Analítica — ${cfg.nome}
+      </div>
+      <div class="ptc-meta" id="tblMeta_${cod}">—</div>
+    </div>
+    <div style="overflow-x:auto;">
+      <table class="p-table">
+        <thead><tr>
+          <th>Laudo / ID</th>
+          <th>Nº Docs</th>
+          <th>Faixa Volume</th>
+          <th>Tempo Total</th>
+          <th>Eficiência (Limiar)</th>
+          <th>Barra</th>
+          <th>Classificação</th>
+        </tr></thead>
+        <tbody id="tblBody_${cod}"></tbody>
+      </table>
+    </div>
+    <div class="p-pag">
+      <span id="pagInfo_${cod}">—</span>
+      <div class="pag-btns" id="pagBtns_${cod}"></div>
+    </div>
+  </div>`;
+}
+
+/* ════════════════════════════════════════════════════
+   GRÁFICOS POR ETAPA
+════════════════════════════════════════════════════ */
+function renderChartsEtapa(cod, cfg, et) {
+  if (perfCharts[cod]) {
+    Object.values(perfCharts[cod]).forEach(g=>{ if(g) try{g.destroy();}catch(e){} });
+  }
+  perfCharts[cod] = {};
+
+  const d   = et.distribuicao;
+  const f   = et.faixas;
+  const lim = cfg.limiar;
+  const cor = cfg.cor;
+
+  // 1. Distribuição de eficiência (com limiares corretos da etapa)
+  perfCharts[cod].dist = new Chart(document.getElementById(`pc_dist_${cod}`), {
+    type: 'doughnut',
+    data: {
+      labels: [
+        `Ótimo (≤${lim.OTIMO}min)`,
+        `Bom (≤${lim.BOM}min)`,
+        `Regular (≤${lim.REGULAR}min)`,
+        `Lento (>${lim.REGULAR}min)`
+      ],
+      datasets: [{
+        data: [d.otimo, d.bom, d.regular, d.lento],
+        backgroundColor: ['#0a9e6e','#1847c2','#d97706','#dc2626'],
+        borderWidth: 2, borderColor: '#fff', hoverOffset: 10
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: {
+        legend: { position:'right', labels:{ padding:12, boxWidth:10, font:{size:11} } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.raw} laudos — ${ctx.label}` } }
+      },
+      cutout: '62%'
+    }
+  });
+
+  // 2. Faixas de volume (limiares corretos do backend v5)
+  perfCharts[cod].faixas = new Chart(document.getElementById(`pc_faixas_${cod}`), {
+    type: 'bar',
+    data: {
+      labels: [
+        `Pequeno\n(1–${VOL_FAIXAS.PEQUENO})`,
+        `Médio\n(${VOL_FAIXAS.PEQUENO+1}–${VOL_FAIXAS.MEDIO})`,
+        `Grande\n(${VOL_FAIXAS.MEDIO+1}–${VOL_FAIXAS.GRANDE})`,
+        `Muito Grande\n(${VOL_FAIXAS.GRANDE+1}+)`
+      ],
+      datasets: [{
+        label: 'Laudos',
+        data: [f.pequeno||0, f.medio||0, f.grande||0, f.muito_grande||0],
+        backgroundColor: ['#0891b2','#0a9e6e','#d97706','#7c3aed'],
+        borderRadius: 5, barPercentage: .6
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: { legend:{ display:false } },
+      scales: {
+        y: { beginAtZero:true, border:{dash:[5,5]}, grid:{color:'#dde3ef'} },
+        x: { grid:{display:false} }
+      }
+    }
+  });
+
+  // 3. Scatter: Volume × Tempo/doc
+  const scatter = et.scatter || [];
+  const scatColors = { otimo:'#0a9e6e', bom:'#1847c2', regular:'#d97706', lento:'#dc2626' };
+  perfCharts[cod].scatter = new Chart(document.getElementById(`pc_scatter_${cod}`), {
+    type: 'scatter',
+    data: {
+      datasets: [{
+        label: cfg.nome,
+        data: scatter,
+        backgroundColor: scatter.map(p=>scatColors[p.efic||'lento']+'aa'),
+        borderColor:     scatter.map(p=>scatColors[p.efic||'lento']),
+        pointRadius: 5, pointHoverRadius: 8
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: {
+        legend:{ display:false },
+        tooltip: { callbacks: { label: ctx => `Laudo ${ctx.raw.label||''}: ${ctx.raw.x} docs, ${ctx.raw.y.toFixed(2)} min/doc` } }
+      },
+      scales: {
+        x: { title:{display:true,text:'Nº de Documentos'}, border:{dash:[5,5]}, grid:{color:'#dde3ef'} },
+        y: { title:{display:true,text:'min/doc'},          border:{dash:[5,5]}, grid:{color:'#dde3ef'} }
+      }
+    }
+  });
+
+  // 4. Top 10 mais eficientes
+  const top10 = (et.ranking && et.ranking.maisEficientes) ? et.ranking.maisEficientes.slice(0,10) : [];
+  const pal = ['#0a9e6e','#12c58a','#34d399','#6ee7b7','#a7f3d0','#1847c2','#3a6ef5','#60a5fa','#d97706','#fbbf24'];
+  perfCharts[cod].rank = new Chart(document.getElementById(`pc_rank_${cod}`), {
+    type: 'bar',
+    data: {
+      labels: top10.map(r=>String(r.tomoId)),
+      datasets: [{
+        label: 'Tempo Total (min)',
+        data: top10.map(r=>r.tempoTotal),
+        backgroundColor: top10.map((_,i)=>pal[i]||'#94a3b8'),
+        borderRadius: 4, barPercentage: .65
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false, indexAxis:'y',
+      plugins: {
+        legend:{ display:false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.raw} min (${ctx.label})` } }
+      },
+      scales: {
+        x: { beginAtZero:true, border:{dash:[5,5]}, grid:{color:'#dde3ef'} },
+        y: { grid:{display:false} }
+      }
+    }
+  });
+
+  // 5. Estatísticas de tempo (mín, média-dp, média, média+dp, máx)
+  const med = et.kpis.tempoMedio;
+  const dp  = et.stats.desvioPadrao;
+  perfCharts[cod].desvio = new Chart(document.getElementById(`pc_desvio_${cod}`), {
+    type: 'bar',
+    data: {
+      labels: ['Mínimo','Média − DP','Média','Média + DP','Máximo'],
+      datasets: [{
+        label: 'min',
+        data: [
+          parseFloat(et.kpis.tempoMin.toFixed(1)),
+          parseFloat(Math.max(0,med-dp).toFixed(1)),
+          parseFloat(med.toFixed(1)),
+          parseFloat((med+dp).toFixed(1)),
+          parseFloat(et.kpis.tempoMax.toFixed(1))
+        ],
+        backgroundColor: ['#0a9e6e','#1847c2',cor,'#d97706','#dc2626'],
+        borderRadius: 5, barPercentage: .55
+      }]
+    },
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      plugins: {
+        legend:{ display:false },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.raw} min` } }
+      },
+      scales: {
+        y: { beginAtZero:true, border:{dash:[5,5]}, grid:{color:'#dde3ef'}, title:{display:true,text:'minutos'} },
+        x: { grid:{display:false} }
+      }
+    }
+  });
+
+  renderAlertas(cod, cfg, et);
+}
+
+/* ════════════════════════════════════════════════════
+   ALERTAS INTELIGENTES POR ETAPA
+════════════════════════════════════════════════════ */
+function renderAlertas(cod, cfg, et) {
+  const al  = [];
+  const med = et.kpis.tempoMedio;
+  const dp  = et.stats.desvioPadrao;
+  const idx = et.kpis.indicePerformance;
+  const tot = et.kpis.totalRegistros;
+  const d   = et.distribuicao;
+  const lim = cfg.limiar;
+
+  if (tot > 0 && (d.lento/tot) > 0.5) {
+    al.push({cls:'al-err', ico:'fa-circle-exclamation',
+      msg:`<b>${d.lento} laudos (${((d.lento/tot)*100).toFixed(0)}%)</b> são <strong>Lentos</strong> em ${cfg.nome} — mais de metade excede ${lim.REGULAR} minutos.`});
+  }
+
+  const acima = et.registros.filter(r=>r.tempoTotal > med*1.5).length;
+  if (acima > 0) {
+    al.push({cls:'al-warn', ico:'fa-triangle-exclamation',
+      msg:`<b>${acima} laudo${acima>1?'s':''}</b> com tempo acima de 150% da média de <strong>${cfg.nome}</strong> (${med.toFixed(1)} min).`});
+  }
+
+  if (dp > med * 0.5 && tot >= 5) {
+    al.push({cls:'al-warn', ico:'fa-chart-simple',
+      msg:`Alta variância em <strong>${cfg.nome}</strong>: DP = ${dp.toFixed(1)} min (${(dp/med*100).toFixed(0)}% da média). Processos inconsistentes.`});
+  } else if (dp <= med * 0.2 && tot >= 5) {
+    al.push({cls:'al-ok', ico:'fa-circle-check',
+      msg:`<strong>${cfg.nome}</strong> apresenta alta consistência: DP de apenas ${dp.toFixed(1)} min.`});
+  }
+
+  const extRap = et.registros.filter(r=>r.faixa==='muito_grande'&&r.eficiencia==='otimo').length;
+  if (extRap > 0) {
+    al.push({cls:'al-ok', ico:'fa-trophy',
+      msg:`<b>${extRap} laudo${extRap>1?'s':''} de volume muito grande</b> processado${extRap>1?'s':''} como Ótimo em <strong>${cfg.nome}</strong> — excelente eficiência!`});
+  }
+
+  if (idx < 50) {
+    al.push({cls:'al-warn', ico:'fa-gauge',
+      msg:`Índice de performance de <strong>${cfg.nome}</strong> em <b>${idx.toFixed(1)}%</b>. Menos da metade dos registros são ótimo/bom.`});
+  } else if (idx >= 80) {
+    al.push({cls:'al-ok', ico:'fa-star',
+      msg:`Excelente! <b>${idx.toFixed(1)}%</b> dos laudos de <strong>${cfg.nome}</strong> são Ótimo ou Bom.`});
+  }
+
+  al.push({cls:'al-info', ico:'fa-circle-info',
+    msg:`<strong>${cfg.nome}</strong>: <b>${tot.toLocaleString('pt-BR')} registros</b>, <b>${et.kpis.totalDocs.toLocaleString('pt-BR')} docs</b>, tempo médio <b>${med.toFixed(1)} min</b>. Ótimo ≤ ${lim.OTIMO}min · Bom ≤ ${lim.BOM}min · Regular ≤ ${lim.REGULAR}min.`});
+
+  document.getElementById(`acBadge_${cod}`).textContent = al.length + ' alerta' + (al.length!==1?'s':'');
+  document.getElementById(`acList_${cod}`).innerHTML = al.map(a=>
+    `<div class="alert-item ${a.cls}"><i class="fa-solid ${a.ico}"></i><span>${a.msg}</span></div>`
+  ).join('');
+}
+
+/* ════════════════════════════════════════════════════
+   FILTROS E TABELA DE PERFORMANCE
+════════════════════════════════════════════════════ */
+function calcRows(cod) {
+  const et = dadosPerfCache.etapas[cod];
+  if (!et||!et.registros) { perfRows[cod]=[]; return; }
+  const ff = (document.getElementById('ff_'+cod)||{}).value||'todos';
+  const fe = (document.getElementById('fe_'+cod)||{}).value||'todos';
+  const fb = ((document.getElementById('fb_'+cod)||{}).value||'').toLowerCase().trim();
+  perfRows[cod] = et.registros.filter(r=>{
+    if (ff!=='todos'&&r.faixa!==ff) return false;
+    if (fe!=='todos'&&r.eficiencia!==fe) return false;
+    if (fb&&!String(r.tomoId).toLowerCase().includes(fb)) return false;
+    return true;
+  });
+}
+
+function filtrarEt(cod) { calcRows(cod); perfPags[cod]=1; renderTbl(cod); }
+function debounceFilter(cod) { clearTimeout(debounceTimer); debounceTimer=setTimeout(()=>filtrarEt(cod),280); }
+function limparFiltros(cod) {
+  ['ff_','fe_','fb_'].forEach(p=>{ const el=document.getElementById(p+cod); if(el) el.value=el.tagName==='SELECT'?'todos':''; });
+  filtrarEt(cod);
+}
+
+function renderTbl(cod) {
+  const cfg  = ETAPAS[cod];
+  const rows = perfRows[cod]||[];
+  const tot  = rows.length;
+  const totP = Math.max(1,Math.ceil(tot/PERF_PAGE));
+  if (perfPags[cod]>totP) perfPags[cod]=totP;
+  const ini = (perfPags[cod]-1)*PERF_PAGE;
+  const fim = Math.min(ini+PERF_PAGE,tot);
+  const sl  = rows.slice(ini,fim);
+
+  const meta = document.getElementById('tblMeta_'+cod);
+  const body = document.getElementById('tblBody_'+cod);
+  if (!meta||!body) return;
+
+  meta.textContent = tot===0?'Nenhum resultado':`${ini+1}–${fim} de ${tot} registros`;
+
+  if (!sl.length) {
+    body.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:50px;color:var(--text-3);">
+      <i class="fa-solid fa-magnifying-glass" style="font-size:26px;opacity:.2;display:block;margin-bottom:12px;"></i>
+      Nenhum registro de ${cfg.nome} com os filtros.</td></tr>`;
+    renderPag(cod,0,0); return;
+  }
+
+  const nomFx  = { pequeno:'Pequeno', medio:'Médio', grande:'Grande', muito_grande:'Muito Grande' };
+  const fxCls  = { pequeno:'b-pq', medio:'b-md', grande:'b-gd', muito_grande:'b-mg' };
+  const efCls  = { otimo:'eb-o', bom:'eb-b', regular:'eb-r', lento:'eb-l' };
+  const efLbl  = { otimo:'Ótimo', bom:'Bom', regular:'Regular', lento:'Lento' };
+  const efIco  = { otimo:'fa-rocket', bom:'fa-thumbs-up', regular:'fa-minus', lento:'fa-triangle-exclamation' };
+  const barFill= { otimo:'c-g', bom:'c-b', regular:'c-a', lento:'c-r' };
+  const lim    = cfg.limiar;
+  const maxT   = Math.max(...rows.map(r=>r.tempoTotal),1);
+
+  body.innerHTML = sl.map(r=>{
+    const ef  = r.eficiencia;
+    const pct = Math.min(100,Math.max(4,(r.tempoTotal/maxT)*100));
+    // Exibe o limiar correspondente à eficiência para contexto
+    const limRef = ef==='otimo'?`≤${lim.OTIMO}`:ef==='bom'?`≤${lim.BOM}`:ef==='regular'?`≤${lim.REGULAR}`:`>${lim.REGULAR}`;
+    return `<tr>
+      <td class="td-id">${r.tomoId}</td>
+      <td><b>${r.numDocs}</b> docs</td>
+      <td><span class="badge ${fxCls[r.faixa]||'b-pq'}">${nomFx[r.faixa]||r.faixa}</span></td>
+      <td><b>${r.tempoTotal.toFixed(1)}</b> min</td>
+      <td style="font-size:11px;color:var(--text-3);">${limRef} min</td>
+      <td>
+        <div class="ibar">
+          <div class="ibar-track"><div class="ibar-fill ${barFill[ef]}" style="width:${pct}%;"></div></div>
+          <span class="ibar-val">${r.tempoTotal.toFixed(0)}m</span>
+        </div>
+      </td>
+      <td><span class="ebadge ${efCls[ef]}"><i class="fa-solid ${efIco[ef]}"></i>${efLbl[ef]}</span></td>
+    </tr>`;
+  }).join('');
+
+  renderPag(cod,tot,totP);
+}
+
+function renderPag(cod,tot,totP) {
+  const info = document.getElementById('pagInfo_'+cod);
+  const btns = document.getElementById('pagBtns_'+cod);
+  if (!info||!btns) return;
+  const p = perfPags[cod];
+  if (tot===0){ info.textContent=''; btns.innerHTML=''; return; }
+  info.textContent = `Página ${p} de ${totP}`;
+  let h = `<button class="pbtn" onclick="goPage('${cod}',1)" ${p===1?'disabled':''}>«</button>`;
+  h    += `<button class="pbtn" onclick="goPage('${cod}',${p-1})" ${p===1?'disabled':''}>‹</button>`;
+  for(let pp=Math.max(1,p-2);pp<=Math.min(totP,p+2);pp++){
+    h += `<button class="pbtn${pp===p?' active':''}" onclick="goPage('${cod}',${pp})">${pp}</button>`;
+  }
+  h += `<button class="pbtn" onclick="goPage('${cod}',${p+1})" ${p===totP?'disabled':''}>›</button>`;
+  h += `<button class="pbtn" onclick="goPage('${cod}',${totP})" ${p===totP?'disabled':''}>»</button>`;
+  btns.innerHTML = h;
+}
+
+function goPage(cod,p) {
+  const tot = Math.ceil((perfRows[cod]||[]).length/PERF_PAGE);
+  if(p<1||p>tot) return;
+  perfPags[cod]=p;
+  renderTbl(cod);
+  document.getElementById('panel-performance').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* ════════════════════════════════════════════════════
+   EXPORTAR CSV
+════════════════════════════════════════════════════ */
+function exportCSV(cod) {
+  const rows = perfRows[cod]||[];
+  if (!rows.length){ toast('Nenhum dado para exportar.','error'); return; }
+  const cfg = ETAPAS[cod];
+  const nm  = {pequeno:'Pequeno',medio:'Médio',grande:'Grande',muito_grande:'Muito Grande'};
+  let csv   = `Laudo;Nº Docs;Faixa;Etapa;Tempo Total (min);Eficiência\n`;
+  rows.forEach(r=>{
+    csv += [r.tomoId,r.numDocs,nm[r.faixa]||r.faixa,cfg.nome,r.tempoTotal.toFixed(1),r.eficiencia].join(';')+'\n';
+  });
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href=url; a.download=`performance_${cod}_${anoSelecionado}.csv`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+  toast(`CSV de ${cfg.nome} exportado com ${rows.length} registros!`,'success');
+}
+
+/* ════════════════════════════════════════════════════
+   DESTROI GRÁFICOS DE PERFORMANCE
+════════════════════════════════════════════════════ */
+function destruirChartsPerf() {
+  Object.keys(perfCharts).forEach(cod=>{
+    Object.values(perfCharts[cod]||{}).forEach(g=>{ if(g) try{g.destroy();}catch(e){} });
+    delete perfCharts[cod];
+  });
+  if (gcHistPerf) { try{gcHistPerf.destroy();}catch(e){} gcHistPerf=null; }
+}
+
+/* ════════════════════════════════════════════════════
+   RENDER — DASHBOARD
+════════════════════════════════════════════════════ */
+function renderDash(res) {
+  const cores = { DESM:'#64748b',ETIQ:'#d97706',DIG:'#1847c2',CLA:'#0a9e6e',DEV:'#7c3aed' };
+  const nomes = { DESM:'Desmembrado',ETIQ:'Etiquetado',DIG:'Digitalizado',CLA:'Classificado',DEV:'Devolvido' };
+  const r = res.resumoAno;
+
+  document.getElementById('stageStrip').innerHTML = Object.keys(r.total).map(k=>
+    `<div class="stage-chip">
+      <span class="dot" style="background:${cores[k]||'#888'};"></span>
+      <b>${r.total[k]}</b>
+      <span class="sep">·</span>
+      <span>${nomes[k]||k}${r.tempoMedio[k]>0?' · '+r.tempoMedio[k]+'m':''}</span>
+    </div>`
+  ).join('');
+
+  const todos = Object.keys(res.voluntarios);
+  const qa = todos.filter(n=>!statusVol[n]||statusVol[n]==='ativo').length;
+  const qi = todos.length - qa;
+
+  document.getElementById('totalTomos').innerText    = res.totalTomos;
+  document.getElementById('totalTrimestre').innerText= res.trimestreTotal;
+  document.getElementById('totalVolAtivos').innerText  = qa;
+  document.getElementById('totalVolInativos').innerText= qi;
+  document.getElementById('totalVoluntarios').innerText= todos.length;
+
+  renderGrfEtapas(res);
+  renderGrfMeses(res);
+  renderGrfRosca(res);
+  renderListaVol(res);
+}
+
+function renderGrfEtapas(res) {
+  if (gcEtapas) gcEtapas.destroy();
+  gcEtapas = new Chart(document.getElementById('graficoEtapas'),{
+    type:'bar',
+    data:{
+      labels:Object.keys(res.etapas),
+      datasets:[{label:'Volume de Entregas',data:Object.values(res.etapas),backgroundColor:'#1847c2',borderRadius:5,barPercentage:.5}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,grid:{color:'#dde3ef'},border:{dash:[5,5]}},x:{grid:{display:false}}}}
+  });
+}
+
+function renderGrfMeses(res) {
+  if (gcMeses) gcMeses.destroy();
+  gcMeses = new Chart(document.getElementById('graficoMeses'),{
+    type:'bar',
+    data:{
+      labels:res.producaoMes.meses,
+      datasets:[
+        {label:'Desmembrado', data:res.producaoMes.dados.DESM,backgroundColor:'#94a3b8'},
+        {label:'Etiquetado',  data:res.producaoMes.dados.ETIQ,backgroundColor:'#d97706'},
+        {label:'Digitalizado',data:res.producaoMes.dados.DIG, backgroundColor:'#1847c2'},
+        {label:'Classificado',data:res.producaoMes.dados.CLA, backgroundColor:'#0a9e6e'},
+        {label:'Devolvido',   data:res.producaoMes.dados.DEV, backgroundColor:'#7c3aed'}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      scales:{x:{stacked:true,grid:{display:false}},y:{stacked:true,border:{dash:[5,5]},grid:{color:'#dde3ef'}}},
+      plugins:{legend:{position:'top',labels:{boxWidth:10,padding:14}}}
+    }
+  });
+}
+
+function renderGrfRosca(res) {
+  const filtro = document.getElementById('toggleAtivos').checked;
+  const fonte  = filtro ? res.voluntariosAtivos : res.voluntarios;
+  const bar    = document.getElementById('infoBar');
+  const hd     = document.getElementById('hdRosca');
+  if (filtro && Object.keys(res.voluntariosAtivos).length===0) {
+    bar.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> Nenhum voluntário <strong>ativo</strong>. Defina na aba Gestão de Voluntários.`;
+    bar.classList.add('vis');
+  } else if (filtro) {
+    bar.innerHTML = `<i class="fa-solid fa-filter"></i> Esforço exibindo apenas <strong>voluntários ativos</strong>.`;
+    bar.classList.add('vis');
+  } else { bar.classList.remove('vis'); }
+
+  hd.innerHTML = filtro
+    ? `<i class="fa-solid fa-chart-pie"></i> Esforço — <span style="color:var(--green);font-size:11px;font-weight:700;">somente ativos</span>`
+    : `<i class="fa-solid fa-chart-pie"></i> Distribuição de Esforço por Voluntário`;
+
+  if (gcVol) gcVol.destroy();
+  const pal = ['#1847c2','#0a9e6e','#d97706','#7c3aed','#0891b2','#dc2626','#64748b','#f97316','#ec4899','#14b8a6','#a3e635','#fb923c'];
+  gcVol = new Chart(document.getElementById('graficoVol'),{
+    type:'doughnut',
+    data:{
+      labels:Object.keys(fonte),
+      datasets:[{data:Object.values(fonte),backgroundColor:pal,borderWidth:2,borderColor:'#fff',hoverOffset:10}]
+    },
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{padding:14,boxWidth:10,font:{size:11}}}},cutout:'65%'}
+  });
+}
+
+function renderListaVol(res) {
+  document.getElementById('listaVol').innerHTML = Object.entries(res.voluntarios)
+    .sort((a,b)=>b[1]-a[1])
+    .map(([nome,qtd])=>{
+      const isI = statusVol[nome]==='inativo';
+      return `<div class="vs-item" style="opacity:${isI?.55:1}" onclick="abrirDetVol('${nome.replace(/'/g,"\\'")}')">
+        <div class="vs-item-name">
+          <span class="status-dot${isI?' off':''}"></span>${nome}
+        </div>
+        <span class="vs-badge">${qtd}</span>
+      </div>`;
+    }).join('');
+}
+
+function aplicarFiltro() { if(dadosCache) renderGrfRosca(dadosCache); }
+
+function fecharDetalhes() { document.getElementById('boxDetalhes').style.display='none'; }
+
+function abrirDetVol(nome) {
+  const box = document.getElementById('boxDetalhes');
+  box.style.display='block';
+  document.getElementById('dpContent').innerHTML =
+    `<div style="text-align:center;padding:22px;"><div class="loader-ring" style="margin:0 auto;width:22px;height:22px;border-top-color:#fff;"></div></div>`;
+  box.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  google.script.run
+    .withSuccessHandler(lista=>{
+      if (!lista.length){ document.getElementById('dpContent').innerHTML='<p style="color:#7385a8;font-size:12px;font-weight:500;">Nenhum registro encontrado.</p>'; return; }
+      const st = statusVol[nome]||'ativo';
+      const chip = st==='ativo'
+        ? `<span class="schip schip-a" style="margin-left:10px;font-size:11px;"><span class="dot"></span> Ativo</span>`
+        : `<span class="schip schip-i" style="margin-left:10px;font-size:11px;"><span class="dot"></span> Inativo</span>`;
+      document.getElementById('dpTitle').innerHTML = `<i class="fa-solid fa-clipboard-user"></i> ${nome} ${chip}`;
+      document.getElementById('dpContent').innerHTML = lista.map(it=>
+        `<div class="dp-row">
+          <div><span>Tomo</span><b>${it.tomo}</b></div>
+          <div><span>Etapa</span><b>${it.etapa}</b></div>
+          <div><span>Data</span><b>${it.data}</b></div>
+          <div><span>Tempo</span><b>${it.tempo}</b></div>
+        </div>`
+      ).join('');
+    })
+    .getDetalhesVoluntario(nome);
+}
+
+function filtrarListaVol() {
+  const q = document.getElementById('buscaVol').value.toLowerCase();
+  document.querySelectorAll('#listaVol .vs-item').forEach(el=>{
+    el.style.display = el.querySelector('.vs-item-name').innerText.toLowerCase().includes(q)?'':'none';
+  });
+}
+
+/* ════════════════════════════════════════════════════
+   GESTÃO DE VOLUNTÁRIOS
+════════════════════════════════════════════════════ */
+function renderGestao() {
+  if (!dadosCache) return;
+
+  // Merge: voluntários da planilha + adicionados manualmente
+  const todosDaPlanilha = Object.keys(dadosCache.voluntarios);
+  const setAdicionados  = new Set(voluntariosAdicionados);
+
+  // União de todos
+  const todosNomes = [...new Set([...todosDaPlanilha, ...voluntariosAdicionados])];
+
+  const filtroTxt = (document.getElementById('buscaGestao').value||'').toLowerCase();
+  const filtroSt  = document.getElementById('filtroStGestao').value;
+
+  const qa = todosNomes.filter(n=>!statusVol[n]||statusVol[n]==='ativo').length;
+  const qi = todosNomes.length - qa;
+
+  document.getElementById('g-total').innerText   = todosNomes.length;
+  document.getElementById('g-ativos').innerText  = qa;
+  document.getElementById('g-inativos').innerText= qi;
+  document.getElementById('totalVolAtivos').innerText   = qa;
+  document.getElementById('totalVolInativos').innerText = qi;
+  document.getElementById('totalVoluntarios').innerText = todosNomes.length;
+
+  const filtrados = todosNomes
+    .sort((a,b)=>{
+      // Ordena por interações (planilha) decrescente
+      const ia = dadosCache.voluntarios[a] || 0;
+      const ib = dadosCache.voluntarios[b] || 0;
+      return ib - ia;
+    })
+    .filter(nome=>{
+      const st = statusVol[nome]||'ativo';
+      return nome.toLowerCase().includes(filtroTxt) && (filtroSt==='todos'||filtroSt===st);
+    });
+
+  const tbody = document.getElementById('tblGestao');
+  if (!filtrados.length){
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-3);">
+      <i class="fa-solid fa-user-slash" style="opacity:.2;font-size:26px;display:block;margin-bottom:12px;"></i>
+      Nenhum voluntário com os filtros.</td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = filtrados.map((nome,idx)=>{
+    const st    = statusVol[nome]||'ativo';
+    const isA   = st==='ativo';
+    const qtd   = dadosCache.voluntarios[nome] || 0;
+    const isMan = setAdicionados.has(nome); // adicionado manualmente
+    const srcChip = isMan
+      ? `<span class="src-chip src-manual"><i class="fa-solid fa-hand"></i> Manual</span>`
+      : `<span class="src-chip src-planilha"><i class="fa-solid fa-table"></i> Planilha</span>`;
+
+    return `<tr>
+      <td style="color:var(--text-3);font-size:12px;">${idx+1}</td>
+      <td><strong>${nome}</strong> ${srcChip}</td>
+      <td>${isMan && qtd===0
+            ? '<span style="color:var(--text-4);font-size:12px;">—</span>'
+            : qtd+' interaç'+(qtd===1?'ão':'ões')}</td>
+      <td><span class="schip ${isA?'schip-a':'schip-i'}"><span class="dot"></span>${isA?'Ativo':'Inativo'}</span></td>
+      <td style="display:flex;align-items:center;gap:6px;">
+        ${isA
+          ? `<button class="tbtn tbtn-inat" onclick="toggleSt('${nome.replace(/'/g,"\\'")}','inativo')"><i class="fa-solid fa-circle-xmark"></i> Marcar Inativo</button>`
+          : `<button class="tbtn tbtn-ativ" onclick="toggleSt('${nome.replace(/'/g,"\\'")}','ativo')"><i class="fa-solid fa-circle-check"></i> Marcar Ativo</button>`
+        }
+        ${isMan ? `<button class="tbtn tbtn-del" title="Remover voluntário" onclick="abrirModalDel('${nome.replace(/'/g,"\\'")}')"><i class="fa-solid fa-trash"></i></button>` : ''}
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function filtrarTblGestao() { renderGestao(); }
+
+function toggleSt(nome, novo) {
+  statusVol[nome] = novo;
+  renderGestao();
+  if (dadosCache){ renderListaVol(dadosCache); syncVolKPIs(); }
+}
+
+function syncVolKPIs() {
+  if (!dadosCache) return;
+  const todos = [...new Set([...Object.keys(dadosCache.voluntarios),...voluntariosAdicionados])];
+  const a = todos.filter(n=>!statusVol[n]||statusVol[n]==='ativo').length;
+  document.getElementById('totalVolAtivos').innerText   = a;
+  document.getElementById('totalVolInativos').innerText = todos.length-a;
+}
+
+function marcarTodos(st) {
+  if (!dadosCache) return;
+  const todos = [...new Set([...Object.keys(dadosCache.voluntarios),...voluntariosAdicionados])];
+  todos.forEach(n=>{ statusVol[n]=st; });
+  renderGestao();
+  if (dadosCache) renderListaVol(dadosCache);
+}
+
+function salvarStatus() {
+  loader(true);
+  google.script.run
+    .withSuccessHandler(()=>{
+      loader(false);
+      toast('Status dos voluntários salvo com sucesso!','success');
+      dadosPerfCache = null;
+      destruirChartsPerf();
+      document.getElementById('perfOverviewWrap').innerHTML='';
+      document.getElementById('perfHistWrap').innerHTML='';
+      carregarDados();
+    })
+    .withFailureHandler(e=>{ loader(false); toast('Erro ao salvar: '+(e.message||e),'error'); })
+    .salvarStatusVoluntarios(statusVol);
+}
+
+/* ════════════════════════════════════════════════════
+   AUTO-REFRESH & START
+════════════════════════════════════════════════════ */
+setInterval(()=>{
+  if (document.getElementById('panel-dashboard').classList.contains('active')) carregarDados();
+}, 90000);
+
+init();
+</script>
+<script src="script.js"></script>
+</body>
+</html>
