@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head> 
-<link rel="stylesheet" href="styles.css">
+<head>
 <meta charset="UTF-8">
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 
+<style>
+/* ================================================================
+   SISTEMA IJC — DESIGN SYSTEM UNIFICADO
+   styles.css v3.0
+   Cobertura: Central Operacional (index.html) + Dashboard (Dashboard2.html)
+   ================================================================ */
 
+/* ----------------------------------------------------------------
+   1. TOKENS DE DESIGN
+   ---------------------------------------------------------------- */
 :root {
   /* Paleta principal */
   --brand:        #1847c2;
@@ -2297,6 +2305,7 @@ button:active { transform: translateY(0) !important; }
   body { background: #fff; }
   #loader, #global-loader { display: none !important; }
 }
+</style>
 </head>
 <body>
 
@@ -2743,7 +2752,7 @@ function buscar() {
   if (!tomo) { alert("Digite um número de tomo."); return; }
 
   loading(true);
- 
+  google.script.run
     .withSuccessHandler(function (r) {
       loading(false);
       renderizarBusca(r);
@@ -2758,7 +2767,7 @@ function buscar() {
 function ir() {
   var tomo = document.getElementById("tomoBusca").value.trim();
   if (!tomo) { alert("Digite um número de tomo."); return; }
-  
+  google.script.run.irParaTomo(tomo);
 }
 
 /* ──────────────────────────────────────────────
@@ -2790,7 +2799,7 @@ function salvar() {
   if (etapa !== "") d.etapa = etapa;
   if (visao !== "") d.visao = visao;
 
- 
+  google.script.run
     .withSuccessHandler(function (res) {
       loading(false);
       showMsg("msg", res.msg, res.status === "OK");
@@ -2842,7 +2851,7 @@ function excluir() {
   if (!confirm("Tem certeza que deseja apagar os campos marcados do tomo " + tomo + "?")) return;
 
   loading(true);
-  
+  google.script.run
     .withSuccessHandler(function (res) {
       loading(false);
       showMsg("msg-excluir", res.msg, res.status === "OK");
@@ -2890,7 +2899,7 @@ function gerarPreviewEnvio() {
   tomosParaEnviar = lista;
   loading(true);
 
- 
+  google.script.run
     .withSuccessHandler(function (resultados) {
       loading(false);
       dadosPreview = resultados;
@@ -2943,9 +2952,9 @@ function confirmarEnvio() {
   fecharModal();
   loading(true);
 
-  
+  google.script.run
     .withSuccessHandler(function (resultados) {
-      
+      google.script.run
         .withSuccessHandler(function (listaFormatada) {
           loading(false);
           listaFinal = listaFormatada;
@@ -3030,6 +3039,5 @@ document.getElementById("tomoBusca").addEventListener("keydown", function (e) {
   if (e.key === "Enter") buscar();
 });
 </script>
-<script src="script.js"></script>
 </body>
 </html>
