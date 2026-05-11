@@ -2670,7 +2670,6 @@ function confirmarAdd() {
   fecharModalAdd();
   loader(true);
 
-  google.script.run
     .withSuccessHandler(res => {
       loader(false);
       if (res.ok) {
@@ -2704,7 +2703,7 @@ function executarRemocao() {
   fecharModalDel();
   loader(true);
 
-  google.script.run
+ 
     .withSuccessHandler(res => {
       loader(false);
       if (res.ok) {
@@ -2759,7 +2758,7 @@ function init() {
 
   function tentarCarregarAnos() {
     if (!statusOk || !addOk) return;
-    google.script.run
+
       .withSuccessHandler(anos => {
         const sel = document.getElementById('anoSelect');
         sel.innerHTML = '';
@@ -2785,12 +2784,12 @@ function init() {
       .getAnosDisponiveis();
   }
 
-  google.script.run
+
     .withSuccessHandler(st => { statusVol = st || {}; statusOk=true; tentarCarregarAnos(); })
     .withFailureHandler(e  => { loader(false); toast('Erro status: '+(e.message||e),'error'); })
     .getStatusVoluntarios();
 
-  google.script.run
+  
     .withSuccessHandler(lista => { voluntariosAdicionados = lista || []; addOk=true; tentarCarregarAnos(); })
     .withFailureHandler(() => { voluntariosAdicionados=[]; addOk=true; tentarCarregarAnos(); })
     .getVoluntariosAdicionados();
@@ -2802,7 +2801,7 @@ function init() {
 function carregarDados() {
   loader(true);
   const ativos = Object.keys(statusVol).filter(n=>statusVol[n]==='ativo');
-  google.script.run
+  
     .withSuccessHandler(res => { dadosCache=res; renderDash(res); loader(false); })
     .withFailureHandler(e  => { loader(false); toast('Erro dashboard: '+(e.message||e),'error'); })
     .getDadosCompletos(anoSelecionado, ativos);
@@ -2833,7 +2832,7 @@ function carregarPerf() {
     toast('Timeout ao carregar performance.','error');
   }, 55000);
 
-  google.script.run
+
     .withSuccessHandler(res => {
       clearTimeout(tOut);
       perfCarregando = false;
@@ -3689,7 +3688,7 @@ function abrirDetVol(nome) {
     `<div style="text-align:center;padding:22px;"><div class="loader-ring" style="margin:0 auto;width:22px;height:22px;border-top-color:#fff;"></div></div>`;
   box.scrollIntoView({behavior:'smooth',block:'nearest'});
 
-  google.script.run
+ 
     .withSuccessHandler(lista=>{
       if (!lista.length){ document.getElementById('dpContent').innerHTML='<p style="color:#7385a8;font-size:12px;font-weight:500;">Nenhum registro encontrado.</p>'; return; }
       const st = statusVol[nome]||'ativo';
@@ -3815,7 +3814,7 @@ function marcarTodos(st) {
 
 function salvarStatus() {
   loader(true);
-  google.script.run
+ 
     .withSuccessHandler(()=>{
       loader(false);
       toast('Status dos voluntários salvo com sucesso!','success');
